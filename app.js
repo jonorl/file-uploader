@@ -9,6 +9,7 @@ const path = require("node:path");
 
 // Prisma config
 const { PrismaClient } = require('@prisma/client');
+const { PrismaSessionStore } = require('@quixo3/prisma-session-store');
 const prisma = new PrismaClient();
 
 // Passport and hashing libs for user authentication
@@ -63,7 +64,23 @@ passport.deserializeUser(async (data, done) => {
 
 // Express session config
 
-app.use(session({ secret: "cats", resave: false, saveUninitialized: false }));
+app.use(session({
+  cookie: {
+   maxAge: 7 * 24 * 60 * 60 * 1000 // ms
+  },
+  secret: 'mahSecretWard',
+  resave: true,
+  saveUninitialized: true,
+  store: new PrismaSessionStore(
+    new PrismaClient(),
+    {
+      checkPeriod: 2 * 60 * 1000,  //ms
+      dbRecordIdIsSessionId: true,
+      dbRecordIdFunction: undefined,
+    }
+  )
+})
+);
 app.use(passport.session());
 
 // "locals" initialisation
