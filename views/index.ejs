@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="styles.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <title><%= title %></title>
+  </head>
+
+  <header>
+    <a href="/">Home</a>
+
+    <% if (user) { %>
+    <a href="/new-message">Leave a message</a>
+
+    <a href="/profile">Profile</a>
+
+    <a href="/logout">Logout</a>
+
+    <% } else { %>
+
+    <a href="/login">Login</a>
+
+    <a href="/sign-up">Sign Up</a>
+
+    <% } %>
+  </header>
+
+  <body>
+    <h1 class="title"><%=title%></h1>
+
+    <% if (user) { %>
+    <p>Welcome, <%= user.first_name %>!</p>
+    <% } else { %>
+    <p>Welcome, guest!</p>
+    <p>You'll be able to see messages, but not who posted it, when, delete or post your own.</p>
+    <% } %>
+    <h2>Message board</h2>
+    <div class="cards-container">
+      <% board.forEach((message) => { %>
+      <div class="card">
+        <% if (user) { %> <% if (user.role === "member" || user.role ===
+        "admin") { %>
+        <h2 class="user">From: <%=message.email%></h2>
+        <h3 class="date"><%=message.formattedDate%></h3>
+        <h4 class="time"><%=message.formattedTime%></h4>
+        <% if (user.role === "admin") { %>
+        <a class="delete" href="/delete/<%= message.message_id %>">
+          <i id="<%= message.message_id %>" class="fas fa-trash-alt"></i>
+        </a>
+        <% } %> <% } %> <% } %>
+        <h3 class="message"><%=message.title%></h3>
+        <p class="message"><%=message.text%></p>
+      </div>
+      <% }) %>
+    </div>
+  </body>
+</html>

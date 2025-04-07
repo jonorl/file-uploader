@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="styles.css" />
+    <title>Log In</title>
+  </head>
+  <header>
+    <a href="/">Home</a>
+
+    <% if (user) { %>
+    <a href="/new-message">Leave a message</a>
+
+    <a href="/profile">Profile</a>
+
+    <a href="/logout">Logout</a>
+
+    <% } else { %>
+
+    <a href="/login">Login</a>
+
+    <a href="/sign-up">Sign Up</a>
+
+    <% } %>
+  </header>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="styles.css" />
+    <title><%= title %></title>
+  </head>
+  <body>
+    <% if (user) { %>
+    <h1 class="title">Post New Message!</h1>
+    <h2><%= user.email %>, your email will be visible to other users</h2>
+    <div class="form-container">
+      <form method="POST" action="/new-message" class="form">
+        <label for="title">Title:</label><br />
+        <input type="text" id="title" name="title" /><br />
+        <label for="message">Message:</label><br />
+        <textarea type="text" id="message" name="message"></textarea>
+        <button class="submit" id="submit">Submit</button>
+      </form>
+    </div>
+    <% } else { %>
+    <h1>Please log in</h1>
+    <form action="/login" method="POST">
+      <label for="username">Username</label>
+      <input id="username" name="username" placeholder="username" type="text" />
+      <label for="password">Password</label>
+      <input id="password" name="password" type="password" />
+      <button type="submit">Log In</button>
+    </form>
+    <% } %>
+  </body>
+</html>

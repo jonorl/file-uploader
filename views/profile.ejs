@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="styles.css" />
+    <title>Log In</title>
+  </head>
+  <header>
+    <a href="/">Home</a>
+
+    <% if (user) { %>
+    <a href="/new-message">Leave a message</a>
+
+    <a href="/profile">Profile</a>
+
+    <a href="/logout">Logout</a>
+
+    <% } else { %>
+
+    <a href="/login">Login</a>
+
+    <a href="/sign-up">Sign Up</a>
+
+    <% } %>
+  </header>
+  <body>
+    <% if (user) { %> <% if (user.role === "user") { %>
+    <p><%= user.email %>, right now your type of role is: <%= user.role %></p>
+    <p>You are able to post messages, but not see its details or delete them</p>
+    <p>Please validate your user, type member or admin</p>
+    <form action="/profile" method="POST">
+      <label for="membership">Membership keyword</label>
+      <input
+        id="membership"
+        name="membership"
+        placeholder="keyword"
+        type="text"
+      />
+      <% if (typeof errors !== 'undefined' && errors.length > 0) { %>
+        <ul class="errors">
+          <% errors.forEach(error => { %>
+          <li><%= error.msg %></li>
+          <% }); %>
+        </ul>
+        <% } %>
+      <button type="submit">Submit Membership</button>
+    </form>
+    <% } else { %>
+    <p>You are logged in as a(n) <%= user.role %></p>
+    <% } %> 
+    <p>Total visits: <%= user.visits %></p>
+    <p>Last visit: <%= user.updated_at %></p>
+    <p>Account created: <%= user.created_at %></p>
+    <% } else { %>
+    <h1>Please log in</h1>
+    <form action="/login" method="POST">
+      <label for="username">Username</label>
+      <input id="username" name="username" placeholder="username" type="text" />
+      <label for="password">Password</label>
+      <input id="password" name="password" type="password" />
+      <button type="submit">Log In</button>
+    </form>
+    <% } %>
+  </body>
+</html>
