@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@quixo3/prisma-session-store": "^3.1.13",
     "alert": "^6.0.2",
     "bcryptjs": "^3.0.2",
     "dotenv": "^16.4.7",
@@ -17,5 +18,25 @@
     "pg": "^8.14.1"
   },
   "name": "load-db",
-  "version": "1.0.0"
+  "version": "1.0.0",
+  "description": "File uploader for The Odin Project",
+  "main": "app.js",
+  "devDependencies": {
+    "prisma": "^6.5.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jonorl/file-uploader.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/jonorl/file-uploader/issues"
+  },
+  "homepage": "https://github.com/jonorl/file-uploader#readme"
 }

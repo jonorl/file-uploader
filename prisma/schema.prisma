@@ -1,0 +1,38 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model board {
+  message_id         Int       @id @default(autoincrement())
+  email              String    @db.VarChar(255)
+  text               String
+  message_created_at DateTime? @default(now()) @db.Timestamp(6)
+  title              String
+  users              users     @relation(fields: [email], references: [email], onDelete: Cascade, onUpdate: NoAction)
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model users {
+  user_id       Int       @id @default(autoincrement())
+  first_name    String    @db.VarChar(50)
+  last_name     String    @db.VarChar(50)
+  email         String    @unique @db.VarChar(255)
+  password_hash String
+  role          Role?     @default(user)
+  created_at    DateTime? @default(now()) @db.Timestamp(6)
+  updated_at    DateTime? @default(now()) @db.Timestamp(6)
+  visits        Int?      @default(1)
+  board         board[]
+}
+
+
+enum Role {
+  user
+  admin
+  member
+}

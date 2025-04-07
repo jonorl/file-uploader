@@ -7,6 +7,10 @@ const session = require("express-session");
 const app = express();
 const path = require("node:path");
 
+// Prisma config
+const { PrismaClient } = require('@prisma/client');
+const prisma = new PrismaClient();
+
 // Passport and hashing libs for user authentication
 const bcrypt = require("bcryptjs");
 const passport = require("passport");
