@@ -148,6 +148,11 @@ async function postProfile(req, res) {
   res.redirect("/profile");
 }
 
+async function postUpload(req, res) {
+  console.log(req.file)
+  res.redirect("/upload");
+}
+
 module.exports = {
   getIndex,
   getLogin,
@@ -161,4 +166,5 @@ module.exports = {
   postLogin,
   postNewMessage,
   postProfile,
+  postUpload,
 };
