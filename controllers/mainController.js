@@ -149,7 +149,8 @@ async function postProfile(req, res) {
 }
 
 async function postUpload(req, res) {
-  console.log(req.file)
+
+  console.log(req.file);
   res.redirect("/upload");
 }
 

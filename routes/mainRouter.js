@@ -6,6 +6,7 @@ const { validateUser } = require("../controllers/formValidation");
 const { validateEmail } = require("../controllers/emailDuplicateValidation");
 const { validateMembership } = require("../controllers/profileValidator");
 const { upload } = require("../controllers/multer")
+const { checkDir } = require("../controllers/checkDir")
 
 const mainRouter = Router();
 
@@ -33,7 +34,7 @@ mainRouter.post("/new-message", mainController.postNewMessage)
 
 mainRouter.post("/profile", validateMembership, mainController.postProfile)
 
-mainRouter.post("/upload", upload, mainController.postUpload);
+mainRouter.post("/upload", checkDir, upload, mainController.postUpload);
 
 // Always export back to app.js at the end
 
