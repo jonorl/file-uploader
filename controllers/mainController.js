@@ -56,6 +56,10 @@ async function getDelete(req, res) {
   res.redirect("/");
 }
 
+async function getUpload(req, res) {
+  res.render("../views/upload", { user: req.user });
+}
+
 async function postSignUp(req, res, next) {
   // Handle validation errors
   const errors = validationResult(req);
@@ -152,6 +156,7 @@ module.exports = {
   getNewMessage,
   getProfile,
   getDelete,
+  getUpload,
   postSignUp,
   postLogin,
   postNewMessage,

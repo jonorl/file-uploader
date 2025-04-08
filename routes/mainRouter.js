@@ -22,6 +22,8 @@ mainRouter.get("/profile", mainController.getProfile)
 
 mainRouter.get("/delete/:messageId", mainController.getDelete)
 
+mainRouter.get("/upload", mainController.getUpload)
+
 mainRouter.post("/sign-up", [...validateUser, ...validateEmail], mainController.postSignUp);
 
 mainRouter.post("/login", mainController.postLogin);
