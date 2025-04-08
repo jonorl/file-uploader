@@ -8,7 +8,7 @@ const validateEmail = [
     .bail()
     .custom(async (value) => {
       const user = await db.checkExistingEmail(value);
-      if (user.rows.length > 0) {
+      if (user !== null) {
         throw new Error("Email address already in use.");
       }
       return true;

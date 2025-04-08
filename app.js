@@ -25,13 +25,31 @@ const mainRouter = require("./routes/mainRouter");
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
 
+// Test Raw SQL vs Prisma
+
+// const pool = require("./db/pool");
+// async function getAllUsernames() {
+//   function arraysAreEqualEvery(arr1, arr2) {
+//     // Check lengths AND use every()
+//     return arr1.length === arr2.length && arr1.every((value, index) => value === arr2[index]);
+//   }
+
+//   const { rows } = await pool.query("SELECT * FROM board");
+//   const prismaRows = await prisma.board.findMany();
+
+//   console.log("SQL rows: ", rows)
+//   console.log("Prisma rows: ", prismaRows)
+  
+//   console.log(arraysAreEqualEvery(rows, prismaRows));
+//   return rows;
+// }
+// getAllUsernames();
 
 // Passport config
 passport.use(
   new LocalStrategy(async (username, password, done) => {
     try {
-      const { rows } = await db.serialise(username);
-      const user = rows[0];
+      const user = await db.serialise(username);
       if (!user) {
         return done(null, false, { message: "Incorrect username" });
       }
@@ -54,8 +72,8 @@ passport.serializeUser((user, done) => {
 
 passport.deserializeUser(async (data, done) => {
   try {
-    const { rows } = await db.deserialise(data.id);
-    const user = rows[0];
+    const rows = await db.deserialise(data.id);
+    const user = rows;
     done(null, user);
   } catch (err) {
     done(err);

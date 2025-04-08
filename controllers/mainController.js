@@ -52,7 +52,6 @@ async function getProfile(req, res) {
 }
 
 async function getDelete(req, res) {
-  console.log(req.params.messageId);
   await db.deleteMessage(req.params.messageId);
   res.redirect("/");
 }
