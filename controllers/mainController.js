@@ -4,6 +4,7 @@ const db = require("../db/queries");
 const bcrypt = require("bcryptjs");
 const passport = require("passport");
 const { validationResult } = require("express-validator");
+const { fileManager } = require("./CRUD")
 
 // Optional, load express to format dates
 const moment = require("moment");
@@ -28,6 +29,7 @@ async function getLogin(req, res) {
 }
 
 async function getSignUp(req, res) {
+  console.log(fileManager.read)
   res.render("../views/sign-up", { user: req.user });
 }
 
@@ -57,7 +59,9 @@ async function getDelete(req, res) {
 }
 
 async function getUpload(req, res) {
-  res.render("../views/upload", { user: req.user });
+  console.log(req.directories);
+  console.log(req.directories.items)
+  res.render("../views/upload", { user: req.user, directories: req.directories, items: req.directories.items });
 }
 
 async function postSignUp(req, res, next) {

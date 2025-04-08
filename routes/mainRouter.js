@@ -7,6 +7,7 @@ const { validateEmail } = require("../controllers/emailDuplicateValidation");
 const { validateMembership } = require("../controllers/profileValidator");
 const { upload } = require("../controllers/multer")
 const { checkDir } = require("../controllers/checkDir")
+const fileManager = require("../controllers/CRUD")
 
 const mainRouter = Router();
 
@@ -24,7 +25,7 @@ mainRouter.get("/profile", mainController.getProfile)
 
 mainRouter.get("/delete/:messageId", mainController.getDelete)
 
-mainRouter.get("/upload", mainController.getUpload)
+mainRouter.get("/upload", fileManager.read, mainController.getUpload)
 
 mainRouter.post("/sign-up", [...validateUser, ...validateEmail], mainController.postSignUp);
 
