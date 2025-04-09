@@ -11,25 +11,24 @@ const getPath = (req, res) => {
 
 const fileManager = {
   read: (req, res, next) => {
+    const userPath = getPath(req, res);
     try {
-      const fullPath = getPath(req);
-      const stats = fs.statSync(fullPath);
-      if (stats.isDirectory()) {
-        // If it's a directory, just read the directory items
-        const items = fs.readdirSync(fullPath);
-        req.directories = { type: "directory", items };
+      const items = fs.readdirSync(userPath);
+      const directories = [];
+      const files = [];
 
-        // Don't try to read the directory as a file
-        req.files = { type: "file", content: null };
-        next();
-      }
-      //   } else {
-      //     // If it's a file, read the file content
-      //     const content = fs.readFileSync(fullPath, "utf8");
-      //     req.files = { type: "file", content };
-      //     req.directories = { type: "directory", items: [] };
-      //     next();
-      //   }
+      items.forEach((item) => {
+        const itemPath = path.join(userPath, item);
+        const stat = fs.lstatSync(itemPath);
+        if (stat.isDirectory()) {
+          directories.push(item);
+        }
+        if (stat.isFile()) files.push(item);
+      });
+      req.directories = { type: "directory", directories: directories };
+      req.files = { type: "file", files: files };
+
+      next();
     } catch (err) {
       res.status(500).json({ error: err.message });
     }

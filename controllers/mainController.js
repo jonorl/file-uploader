@@ -60,8 +60,8 @@ async function getDelete(req, res) {
 
 async function getUpload(req, res) {
   console.log(req.directories);
-  console.log(req.directories.items)
-  res.render("../views/upload", { user: req.user, directories: req.directories, items: req.directories.items });
+  console.log(req.files)
+  res.render("../views/upload", { user: req.user, directories: req.directories, files: req.files });
 }
 
 async function postSignUp(req, res, next) {

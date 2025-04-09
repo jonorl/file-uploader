@@ -25,6 +25,16 @@
     <% } %>
   </header>
   <body>
+    <% if (user) { %> 
+      <h1>Directories</h1>
+      <% directories.directories.forEach(dir => { %>
+    <p><%= dir %></p>
+    <% })} %>
+    <h1>Files</h1>
+    <% files.files.forEach(file => { %>
+      <p><%= file %></p>
+      <% }) %>
+    
     <% if (user) { %>
     <form action="/upload" method="POST" enctype="multipart/form-data">
       <label for="upload">Upload file</label>
