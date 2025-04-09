@@ -25,7 +25,7 @@ mainRouter.get("/profile", mainController.getProfile)
 
 mainRouter.get("/delete/:messageId", mainController.getDelete)
 
-mainRouter.get("/upload", fileManager.read, mainController.getUpload)
+mainRouter.get("/upload", checkDir, fileManager.read, mainController.getUpload)
 
 mainRouter.post("/sign-up", [...validateUser, ...validateEmail], mainController.postSignUp);
 
@@ -36,6 +36,8 @@ mainRouter.post("/new-message", mainController.postNewMessage)
 mainRouter.post("/profile", validateMembership, mainController.postProfile)
 
 mainRouter.post("/upload", checkDir, upload, mainController.postUpload);
+
+mainRouter.post("/newDir", fileManager.create, mainController.postNewDir)
 
 // Always export back to app.js at the end
 

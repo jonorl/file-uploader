@@ -29,7 +29,6 @@ async function getLogin(req, res) {
 }
 
 async function getSignUp(req, res) {
-  console.log(fileManager.read)
   res.render("../views/sign-up", { user: req.user });
 }
 
@@ -153,8 +152,11 @@ async function postProfile(req, res) {
 }
 
 async function postUpload(req, res) {
-
   console.log(req.file);
+  res.redirect("/upload");
+}
+
+async function postNewDir(req, res) {
   res.redirect("/upload");
 }
 
@@ -172,4 +174,5 @@ module.exports = {
   postNewMessage,
   postProfile,
   postUpload,
+  postNewDir,
 };

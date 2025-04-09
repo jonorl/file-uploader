@@ -114,3 +114,57 @@ td {
 button {
   margin-top: 3vh;
 }
+
+.file-container, .dir-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-evenly;
+} 
+
+.file-container>*, .dir-container>* {
+margin-left: 5px;
+margin-right: 5px;
+}
+
+.file-container>p, .dir-container>p{
+  margin-right: 15px;
+}
+
+.addDir>form {
+  display: grid;
+  grid-auto-flow: column;
+  gap: 1vw;
+}
+
+.addDir>form>* {
+  align-self: baseline;
+}
+
+.addNewFolder {
+  border-radius: 50%;
+}
+
+.addFile>form {
+  display: grid;
+  grid-auto-flow: column;
+  box-sizing: border-box;
+  justify-items: center;
+}
+
+.addFile>form>input[type="file"] {
+  width: 75%;
+}
+
+.addFile>form>label {
+  margin-right: 1vw;
+}
+
+.addFile>form>* {
+  align-self: baseline;
+}
+
+.addNewFile {
+  border-radius: 50%;
+  padding-left: -250px;
+}

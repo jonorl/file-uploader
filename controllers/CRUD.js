@@ -33,6 +33,22 @@ const fileManager = {
       res.status(500).json({ error: err.message });
     }
   },
+  create: (req, res, next) => {
+    const rootDirPath = getPath(req, res);
+    const newDirPath = path.join(rootDirPath, req.body.dirName)
+    try {
+      if (fs.existsSync(newDirPath)) {
+        return res.status(409).json({ error: "Directory already exists." });
+      }
+  
+      fs.mkdirSync(newDirPath, { recursive: true });
+      console.log("Directory created.");
+      next();
+    } catch (err) {
+      return res.status(500).json({ error: err.message });
+    }
+  }
+  
 };
 
 module.exports = fileManager;
