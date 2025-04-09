@@ -27,6 +27,8 @@ mainRouter.get("/delete/:messageId", mainController.getDelete)
 
 mainRouter.get("/upload", checkDir, fileManager.read, mainController.getUpload)
 
+mainRouter.get("/new-name/:dir", mainController.getDirEdit)
+
 mainRouter.post("/sign-up", [...validateUser, ...validateEmail], mainController.postSignUp);
 
 mainRouter.post("/login", mainController.postLogin);
@@ -38,6 +40,8 @@ mainRouter.post("/profile", validateMembership, mainController.postProfile)
 mainRouter.post("/upload", checkDir, upload, mainController.postUpload);
 
 mainRouter.post("/newDir", fileManager.create, mainController.postNewDir)
+
+mainRouter.post("/new-name/:oldName/", fileManager.updateDirName, mainController.postDirEdit)
 
 // Always export back to app.js at the end
 

@@ -63,6 +63,11 @@ async function getUpload(req, res) {
   res.render("../views/upload", { user: req.user, directories: req.directories, files: req.files });
 }
 
+async function getDirEdit(req, res) {
+
+  res.render("../views/new-name", {oldName: req.params.dir, newName: req.body.newName, user: req.user});
+}
+
 async function postSignUp(req, res, next) {
   // Handle validation errors
   const errors = validationResult(req);
@@ -160,6 +165,14 @@ async function postNewDir(req, res) {
   res.redirect("/upload");
 }
 
+async function postDirEdit(req, res) {
+  res.redirect("/upload");
+}
+
+async function postNewName(req, res) {
+  res.redirect("/upload")
+}
+
 module.exports = {
   getIndex,
   getLogin,
@@ -169,10 +182,13 @@ module.exports = {
   getProfile,
   getDelete,
   getUpload,
+  getDirEdit,
   postSignUp,
   postLogin,
   postNewMessage,
   postProfile,
   postUpload,
   postNewDir,
+  postDirEdit,
+  postNewName,
 };

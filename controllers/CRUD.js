@@ -47,8 +47,18 @@ const fileManager = {
     } catch (err) {
       return res.status(500).json({ error: err.message });
     }
+  },
+  updateDirName: (req, res, next) => {
+    const dirName = req.body.newName
+    const rootDirPath = getPath(req, res);
+    const oldName = path.join(rootDirPath, req.params.oldName)
+    const newName = path.join(rootDirPath, dirName)
+    fs.rename(oldName, newName, (err) => {
+      if (err) throw err;
+      console.log('directory updated successfullly!')
+    })
+    next();
   }
-  
 };
 
 module.exports = fileManager;
