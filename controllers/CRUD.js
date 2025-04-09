@@ -55,7 +55,19 @@ const fileManager = {
     const newName = path.join(rootDirPath, dirName)
     fs.rename(oldName, newName, (err) => {
       if (err) throw err;
-      console.log('directory updated successfullly!')
+      console.log('directory name updated successfullly!')
+    })
+    next();
+  },
+
+  updateFileName: (req, res, next) => {
+    const fileName = req.body.newName
+    const rootDirPath = getPath(req, res);
+    const oldName = path.join(rootDirPath, req.params.oldName)
+    const newName = path.join(rootDirPath, fileName)
+    fs.rename(oldName, newName, (err) => {
+      if (err) throw err;
+      console.log('file name updated successfullly!')
     })
     next();
   }

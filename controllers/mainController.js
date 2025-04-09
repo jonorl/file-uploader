@@ -64,8 +64,11 @@ async function getUpload(req, res) {
 }
 
 async function getDirEdit(req, res) {
+  res.render("../views/dir-new-name", {oldName: req.params.dir, newName: req.body.newName, user: req.user});
+}
 
-  res.render("../views/new-name", {oldName: req.params.dir, newName: req.body.newName, user: req.user});
+async function getFileEdit(req, res) {
+  res.render("../views/file-new-name", {oldName: req.params.file, newName: req.body.newName, user: req.user});
 }
 
 async function postSignUp(req, res, next) {
@@ -183,6 +186,7 @@ module.exports = {
   getDelete,
   getUpload,
   getDirEdit,
+  getFileEdit,
   postSignUp,
   postLogin,
   postNewMessage,

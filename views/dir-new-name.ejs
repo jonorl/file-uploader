@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="../public/styles.css" />
+    <title>Rename</title>
+  </head>
+  <header>
+    <a href="/">Home</a>
+
+    <% if (user) { %>
+    <a href="/new-message">Leave a message</a>
+
+    <a href="/profile">Profile</a>
+
+    <a href="/logout">Logout</a>
+
+    <% } else { %>
+
+    <a href="/login">Login</a>
+
+    <a href="/sign-up">Sign Up</a>
+
+    <% } %>
+  </header>
+  <body>
+    <p><%=oldName%></p>
+    <% if (user) { %> <% if (user.role === "user") { %>
+    <form action="/dir-new-name/<%=oldName%>" method="POST">
+      <label for="newName">New Name</label>
+      <input id="newName" name="newName" type="text" placeholder="<%=oldName%>" />
+      <button type="submit">Rename</button>
+    </form>
+    <% }} %>
+  </body>
+</html>

@@ -27,7 +27,7 @@
   <body>
     <p><%=oldName%></p>
     <% if (user) { %> <% if (user.role === "user") { %>
-    <form action="/new-name/<%=oldName%>" method="POST">
+    <form action="/file-new-name/<%=oldName%>" method="POST">
       <label for="newName">New Name</label>
       <input id="newName" name="newName" type="text" placeholder="<%=oldName%>" />
       <button type="submit">Rename</button>
