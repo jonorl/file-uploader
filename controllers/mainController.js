@@ -58,8 +58,6 @@ async function getDelete(req, res) {
 }
 
 async function getUpload(req, res) {
-  console.log(req.directories);
-  console.log(req.files)
   res.render("../views/upload", { user: req.user, directories: req.directories, files: req.files });
 }
 
@@ -69,6 +67,10 @@ async function getDirEdit(req, res) {
 
 async function getFileEdit(req, res) {
   res.render("../views/file-new-name", {oldName: req.params.file, newName: req.body.newName, user: req.user});
+}
+
+async function getDirDel(req, res) {
+  res.redirect("/upload");
 }
 
 async function postSignUp(req, res, next) {
@@ -187,6 +189,7 @@ module.exports = {
   getUpload,
   getDirEdit,
   getFileEdit,
+  getDirDel,
   postSignUp,
   postLogin,
   postNewMessage,

@@ -48,10 +48,10 @@
     <% directories.directories.forEach(dir => { %>
     <div class="dir-container">
       <p><%= dir %></p>
-      <a class="edit" href="/dir-new-name/<%= dir %>">
+      <a class="edit"  href="/dir-new-name/<%= dir %>">
         <i id="<%= dir %>" class="fas fa-edit"></i>
       </a>
-      <a class="delete" href="/dirDelete/<%= dir %>">
+      <a class="delete" href="/dir-delete/<%= dir %>">
         <i id="<%= dir %>" class="fas fa-trash-alt"></i>
       </a>
     </div>
@@ -63,7 +63,7 @@
       <a class="edit" href="/file-new-name/<%= file %>">
         <i id="<%= file %>" class="fas fa-edit"></i>
       </a>
-      <a class="delete" href="/fileDelete/<%= file %>">
+      <a class="delete" href="/file-delete/<%= file %>">
         <i id="<%= file %>" class="fas fa-trash-alt"></i>
       </a>
     </div>

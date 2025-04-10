@@ -31,6 +31,8 @@ mainRouter.get("/dir-new-name/:dir", mainController.getDirEdit)
 
 mainRouter.get("/file-new-name/:file", mainController.getFileEdit)
 
+mainRouter.get("/dir-delete/:dir", fileManager.deleteDir, mainController.getDirDel)
+
 mainRouter.post("/sign-up", [...validateUser, ...validateEmail], mainController.postSignUp);
 
 mainRouter.post("/login", mainController.postLogin);
@@ -46,7 +48,6 @@ mainRouter.post("/newDir", fileManager.create, mainController.postNewDir)
 mainRouter.post("/dir-new-name/:oldName/", fileManager.updateDirName, mainController.postDirEdit)
 
 mainRouter.post("/file-new-name/:oldName/", fileManager.updateFileName, mainController.postDirEdit)
-
 
 // Always export back to app.js at the end
 

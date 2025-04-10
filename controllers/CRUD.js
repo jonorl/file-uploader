@@ -70,7 +70,18 @@ const fileManager = {
       console.log('file name updated successfullly!')
     })
     next();
-  }
+  },
+  deleteDir: (req, res, next) => {
+    console.log(req.params.dir)
+    const dirName = req.params.dir
+    const rootDirPath = getPath(req, res);
+    const fullPath = path.join(rootDirPath, dirName)
+    fs.rm(fullPath, { recursive: true }, (err) => {
+      if (err) throw err;
+      console.log('directory name deleted successfullly!')
+    })
+    next();
+  },
 };
 
 module.exports = fileManager;
