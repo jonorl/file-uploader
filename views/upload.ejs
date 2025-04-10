@@ -7,7 +7,7 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
     />
-    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="/styles.css" />
     <title>Upload</title>
   </head>
   <header>
@@ -31,6 +31,9 @@
   <body>
     <% if (user) { %>
     <h1>Directories</h1>
+    <% if (parentPath) { %>
+    <a class="goUp" href="<%= parentPath %>">Go Up</a>
+    <% } %>
     <div class="addDir">
       <form action="/newDir" method="POST">
         <label for="newDir">New folder</label>
@@ -47,8 +50,9 @@
     </div>
     <% directories.directories.forEach(dir => { %>
     <div class="dir-container">
-      <p><%= dir %></p>
-      <a class="edit"  href="/dir-new-name/<%= dir %>">
+      <a class="navigate" href="<%=currentURL%><%= dir %>"><%= dir %> </a>
+
+      <a class="edit" href="/dir-new-name/<%= dir %>">
         <i id="<%= dir %>" class="fas fa-edit"></i>
       </a>
       <a class="delete" href="/dir-delete/<%= dir %>">

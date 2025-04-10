@@ -4,7 +4,7 @@ const db = require("../db/queries");
 const bcrypt = require("bcryptjs");
 const passport = require("passport");
 const { validationResult } = require("express-validator");
-const { fileManager } = require("./CRUD")
+const { fileManager } = require("./CRUD");
 
 // Optional, load express to format dates
 const moment = require("moment");
@@ -58,15 +58,29 @@ async function getDelete(req, res) {
 }
 
 async function getUpload(req, res) {
-  res.render("../views/upload", { user: req.user, directories: req.directories, files: req.files });
+  res.render("../views/upload", {
+    user: req.user,
+    directories: req.directories,
+    files: req.files,
+    parentPath: req.parentPath,
+    currentURL: global.CurrentURL,
+  });
 }
 
 async function getDirEdit(req, res) {
-  res.render("../views/dir-new-name", {oldName: req.params.dir, newName: req.body.newName, user: req.user});
+  res.render("../views/dir-new-name", {
+    oldName: req.params.dir,
+    newName: req.body.newName,
+    user: req.user,
+  });
 }
 
 async function getFileEdit(req, res) {
-  res.render("../views/file-new-name", {oldName: req.params.file, newName: req.body.newName, user: req.user});
+  res.render("../views/file-new-name", {
+    oldName: req.params.file,
+    newName: req.body.newName,
+    user: req.user,
+  });
 }
 
 async function getDel(req, res) {
@@ -175,7 +189,7 @@ async function postDirEdit(req, res) {
 }
 
 async function postNewName(req, res) {
-  res.redirect("/upload")
+  res.redirect("/upload");
 }
 
 module.exports = {
