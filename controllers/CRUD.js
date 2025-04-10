@@ -72,13 +72,22 @@ const fileManager = {
     next();
   },
   deleteDir: (req, res, next) => {
-    console.log(req.params.dir)
     const dirName = req.params.dir
     const rootDirPath = getPath(req, res);
     const fullPath = path.join(rootDirPath, dirName)
     fs.rm(fullPath, { recursive: true }, (err) => {
       if (err) throw err;
-      console.log('directory name deleted successfullly!')
+      console.log('directory deleted successfullly!')
+    })
+    next();
+  },
+  deleteFile: (req, res, next) => {
+    const fileName = req.params.file
+    const rootDirPath = getPath(req, res);
+    const fullPath = path.join(rootDirPath, fileName)
+    fs.unlink(fullPath, (err) => {
+      if (err) throw err;
+      console.log('file deleted successfullly!')
     })
     next();
   },

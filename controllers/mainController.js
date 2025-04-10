@@ -69,7 +69,7 @@ async function getFileEdit(req, res) {
   res.render("../views/file-new-name", {oldName: req.params.file, newName: req.body.newName, user: req.user});
 }
 
-async function getDirDel(req, res) {
+async function getDel(req, res) {
   res.redirect("/upload");
 }
 
@@ -189,7 +189,7 @@ module.exports = {
   getUpload,
   getDirEdit,
   getFileEdit,
-  getDirDel,
+  getDel,
   postSignUp,
   postLogin,
   postNewMessage,
