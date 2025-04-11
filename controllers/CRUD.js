@@ -22,48 +22,57 @@ const getPath = (req, res) => {
 
 const fileManager = {
   read: (req, res, next) => {
-
     const userPath = getPath(req, res);
 
     // get params if any
 
     let extraParams;
     let lastParam;
-    console.log("params: ",req.params)
-    console.log("len: ", Object.keys(req.params).length)
-    const len = Object.keys(req.params).length
+    console.log("params: ", req.params);
+    console.log("len: ", Object.keys(req.params).length);
+    const len = Object.keys(req.params).length;
     if (req.params && Object.keys(req.params).length >= 2) {
       extraParams = Object.values(req.params).filter(Boolean).shift();
-      lastParam = Object.values(req.params.subfolder).join('').split('/').pop() || req.params.subfolder
+      lastParam =
+        Object.values(req.params.subfolder).join("").split("/").pop() ||
+        req.params.subfolder;
       // this is to avoid the annoying {0} object that duplicates the first param.
     } else if (req.params && Object.keys(req.params).length < 2) {
       extraParams = Object.values(req.params).filter(Boolean);
     }
-    console.log("extra params: ", extraParams)
-    console.log("root URL: ", req.get('host'))
-    console.log("last param: ",lastParam)
+    console.log("extra params: ", extraParams);
+    console.log("root URL: ", req.get("host"));
+    console.log("last param: ", lastParam);
 
     // if on a subfolder
     if (req.isNavigateUp) {
       const currentUrlPath = req.path;
       const parentUrlPath = path.posix.dirname(currentUrlPath);
-      req.parentPath = `${req.protocol}://${req.get('host')}${parentUrlPath}/${extraParams}`;
-      console.log("this parentPath: ", req.parentPath)
-      req.goUpPath = `${req.protocol}://${req.get('host')}${parentUrlPath}`;
-      req.lastParam = lastParam
-      console.log("getProtocol: ",req.protocol)
-      console.log("current URL: ", req.currentUrlPath)
-      console.log("goUpPath: ", req.goUpPath)
-      console.log("parent URL Path: ",parentUrlPath);
-      console.log("Full URL: ", req.get('host'), parentUrlPath)
-      console.log("Full URL + params: ", req.get('host'), parentUrlPath,"/", extraParams)
-      console.log("req.parentPath: ", req.parentPath)
+      req.parentPath = `${req.protocol}://${req.get(
+        "host"
+      )}${parentUrlPath}/${extraParams}`;
+      console.log("this parentPath: ", req.parentPath);
+      req.goUpPath = `${req.protocol}://${req.get("host")}${parentUrlPath}`;
+      req.lastParam = lastParam;
+      console.log("getProtocol: ", req.protocol);
+      console.log("current URL: ", req.currentUrlPath);
+      console.log("goUpPath: ", req.goUpPath);
+      console.log("parent URL Path: ", parentUrlPath);
+      console.log("Full URL: ", req.get("host"), parentUrlPath);
+      console.log(
+        "Full URL + params: ",
+        req.get("host"),
+        parentUrlPath,
+        "/",
+        extraParams
+      );
+      console.log("req.parentPath: ", req.parentPath);
 
       try {
         const items = fs.readdirSync(userPath);
         const directories = [];
         const files = [];
-  
+
         items.forEach((item) => {
           const itemPath = path.join(userPath, item);
           const stat = fs.lstatSync(itemPath);
@@ -74,40 +83,43 @@ const fileManager = {
         });
         req.directories = { type: "directory", directories: directories };
         req.files = { type: "file", files: files };
-  
+
         next();
       } catch (err) {
         res.status(500).json({ error: err.message });
       }
-
-    } else
-    // If on root
-    try {
-      const items = fs.readdirSync(userPath);
-      const directories = [];
-      const files = [];
-      console.log("req.path: ",req.path)
-
-      items.forEach((item) => {
-        const itemPath = path.join(userPath, item);
-        const stat = fs.lstatSync(itemPath);
-        if (stat.isDirectory()) {
-          directories.push(item);
-        }
-        if (stat.isFile()) files.push(item);
-      });
-      console.log("req.path: ",req.path)
-      console.log("req path type: ", typeof(req.path.substring(1)))
-      const pathHelper = req.path.substring(0, req.path.length - 1);
-      console.log("path helper: ", pathHelper)
-      req.parentPath = `${req.protocol}://${req.get('host')}${pathHelper}`;
-      req.directories = { type: "directory", directories: directories };
-      req.files = { type: "file", files: files };
-
-      next();
-    } catch (err) {
-      res.status(500).json({ error: err.message });
     }
+    // If on root
+    else
+      try {
+        const items = fs.readdirSync(userPath);
+        const directories = [];
+        const files = [];
+        console.log("req.path: ", req.path);
+
+        items.forEach((item) => {
+          const itemPath = path.join(userPath, item);
+          const stat = fs.lstatSync(itemPath);
+          if (stat.isDirectory()) {
+            directories.push(item);
+          }
+          if (stat.isFile()) files.push(item);
+        });
+        console.log("req.path: ", req.path);
+        console.log("req path type: ", typeof req.path.substring(1));
+        let pathHelper;
+        if (req.path.substring(req.path.length - 1) === "/") {
+          pathHelper = req.path.substring(0, req.path.length - 1);
+        } else pathHelper = req.path;
+        console.log("path helper: ", pathHelper);
+        req.parentPath = `${req.protocol}://${req.get("host")}${pathHelper}`;
+        req.directories = { type: "directory", directories: directories };
+        req.files = { type: "file", files: files };
+
+        next();
+      } catch (err) {
+        res.status(500).json({ error: err.message });
+      }
   },
 
   create: (req, res, next) => {
