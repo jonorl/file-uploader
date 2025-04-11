@@ -46,10 +46,12 @@ const fileManager = {
     if (req.isNavigateUp) {
       const currentUrlPath = req.path;
       const parentUrlPath = path.posix.dirname(currentUrlPath);
-      req.parentPath = path.join(req.get('host'), parentUrlPath,"/", extraParams);
+      req.parentPath = `${req.protocol}://${req.get('host')}${parentUrlPath}/${extraParams}`;
+      console.log("this parentPath: ", req.parentPath)
       req.goUpPath = `${req.protocol}://${req.get('host')}${parentUrlPath}`;
       req.lastParam = lastParam
       console.log("getProtocol: ",req.protocol)
+      console.log("current URL: ", req.currentUrlPath)
       console.log("goUpPath: ", req.goUpPath)
       console.log("parent URL Path: ",parentUrlPath);
       console.log("Full URL: ", req.get('host'), parentUrlPath)
@@ -91,6 +93,8 @@ const fileManager = {
         }
         if (stat.isFile()) files.push(item);
       });
+      console.log("req.path: ",req.path)
+      req.parentPath = `${req.protocol}://${req.get('host')}${req.path}`;
       req.directories = { type: "directory", directories: directories };
       req.files = { type: "file", files: files };
 

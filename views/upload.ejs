@@ -50,7 +50,7 @@
     </div>
     <% directories.directories.forEach(dir => { %>
     <div class="dir-container">
-      <a class="navigate" href="<%=parentPath%>/<%= lastParam %>"><%= dir %> </a>
+      <a class="navigate" href="<%=parentPath%>/<%= dir %>"><%= dir %> </a>
 
       <a class="edit" href="/dir-new-name/<%= dir %>">
         <i id="<%= dir %>" class="fas fa-edit"></i>
