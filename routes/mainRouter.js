@@ -25,7 +25,12 @@ mainRouter.get("/profile", mainController.getProfile);
 
 mainRouter.get("/delete/:messageId", mainController.getDelete);
 
-mainRouter.get("/upload", checkDir, fileManager.read, mainController.getUpload);
+mainRouter.get(
+  "/upload",
+  checkDir,
+  fileManager.read,
+  mainController.getUpload
+);
 
 mainRouter.get("/dir-new-name/:dir", mainController.getDirEdit);
 
@@ -46,7 +51,10 @@ mainRouter.get(
 mainRouter.get(
   "/upload/:subfolder(*)?",
   (req, res, next) => {
-    req.isNavigateUp = true;
+    console.log(req.params);
+    if (req.params) {
+      req.isNavigateUp = true;
+    }
     next();
   },
   fileManager.read,

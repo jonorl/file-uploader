@@ -24,13 +24,14 @@ const fileManager = {
   read: (req, res, next) => {
     const userPath = getPath(req, res);
 
-    // get params if any
-
     let extraParams;
     let lastParam;
     console.log("params: ", req.params);
     console.log("len: ", Object.keys(req.params).length);
     const len = Object.keys(req.params).length;
+
+        // get params if any
+
     if (req.params && Object.keys(req.params).length >= 2) {
       extraParams = Object.values(req.params).filter(Boolean).shift();
       lastParam =
@@ -43,6 +44,7 @@ const fileManager = {
     console.log("extra params: ", extraParams);
     console.log("root URL: ", req.get("host"));
     console.log("last param: ", lastParam);
+    console.log(req.isNavigateUp)
 
     // if on a subfolder
     if (req.isNavigateUp) {
@@ -81,6 +83,7 @@ const fileManager = {
           }
           if (stat.isFile()) files.push(item);
         });
+        req.showGoUp = true
         req.directories = { type: "directory", directories: directories };
         req.files = { type: "file", files: files };
 

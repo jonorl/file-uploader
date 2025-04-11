@@ -66,6 +66,7 @@ async function getUpload(req, res) {
     parentPath: req.parentPath,
     goUpPath: req.goUpPath,
     lastParam: req.lastParam,
+    showGoUp: req.showGoUp
   });
 }
 
@@ -183,7 +184,7 @@ async function postUpload(req, res) {
 }
 
 async function postNewDir(req, res) {
-  res.redirect("/upload");
+  res.redirect("back");
 }
 
 async function postDirEdit(req, res) {
