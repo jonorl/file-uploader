@@ -43,6 +43,7 @@ const fileManager = {
     console.log("root URL: ", req.get('host'))
     console.log("last param: ",lastParam)
 
+    // if on a subfolder
     if (req.isNavigateUp) {
       const currentUrlPath = req.path;
       const parentUrlPath = path.posix.dirname(currentUrlPath);
@@ -80,10 +81,12 @@ const fileManager = {
       }
 
     } else
+    // If on root
     try {
       const items = fs.readdirSync(userPath);
       const directories = [];
       const files = [];
+      console.log("req.path: ",req.path)
 
       items.forEach((item) => {
         const itemPath = path.join(userPath, item);
@@ -94,7 +97,10 @@ const fileManager = {
         if (stat.isFile()) files.push(item);
       });
       console.log("req.path: ",req.path)
-      req.parentPath = `${req.protocol}://${req.get('host')}${req.path}`;
+      console.log("req path type: ", typeof(req.path.substring(1)))
+      const pathHelper = req.path.substring(0, req.path.length - 1);
+      console.log("path helper: ", pathHelper)
+      req.parentPath = `${req.protocol}://${req.get('host')}${pathHelper}`;
       req.directories = { type: "directory", directories: directories };
       req.files = { type: "file", files: files };
 
