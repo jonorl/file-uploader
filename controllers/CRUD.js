@@ -124,7 +124,29 @@ const fileManager = {
 
   create: (req, res, next) => {
     const rootDirPath = getPath(req, res);
-    const newDirPath = path.join(rootDirPath, req.body.dirName);
+    let newDirPath = path.join(rootDirPath, req.body.dirName);
+    const referer = req.get('Referer');
+    let subfolderPath;
+
+    if (referer) {
+      const url = new URL(referer);
+      const match = url.pathname.match(/^\/upload(\/.*)?$/);
+    
+      subfolderPath = match && match[1] ? match[1] : '';
+      console.log("subPath:", subfolderPath);}
+
+    console.log("undefined?: ",typeof subfolderPath )
+    if (typeof subfolderPath !== 'undefined') {
+      const currentUrlPath = req.path;
+      const parentUrlPath = path.posix.dirname(currentUrlPath);
+      // req.goUpPath = `${parentUrlPath}`;
+      newDirPath = path.join(rootDirPath, subfolderPath, req.body.dirName);
+      console.log("aca")
+      console.log("currentURLPath: ", currentUrlPath)
+      console.log("parentURLPath: ", parentUrlPath)
+      console.log("newDirPath: ", newDirPath)
+    }
+
     try {
       if (fs.existsSync(newDirPath)) {
         return res.status(409).json({ error: "Directory already exists." });
