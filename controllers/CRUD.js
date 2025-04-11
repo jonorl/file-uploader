@@ -1,34 +1,83 @@
 const fs = require("fs");
+const { get } = require("http");
 const path = require("path");
 
 const BASE_DIR = path.resolve(__dirname, "..", "uploads");
 
 const getPath = (req, res) => {
-  console.log('!!! INSIDE getPath - req.params:', JSON.stringify(req.params));
   const user = req.user;
   let userDirPath = path.join(BASE_DIR, user.user_id.toString());
   // Check if there are any params, and if so add them to the path
   if (req.params && Object.keys(req.params).length > 2) {
     const extraParams = Object.values(req.params).filter(Boolean).shift();
     userDirPath = path.join(userDirPath, ...extraParams);
-  } else if(req.params && Object.keys(req.params).length === 2){
+    // this is to avoid the annoying {0} object that duplicates the first param.
+  } else if (req.params && Object.keys(req.params).length === 2) {
     const extraParams = Object.values(req.params).filter(Boolean).shift();
     userDirPath = path.join(userDirPath, extraParams);
   }
+  console.log("getPath: ", userDirPath);
   return userDirPath;
 };
 
 const fileManager = {
   read: (req, res, next) => {
+
     const userPath = getPath(req, res);
+
+    // get params if any
+
+    let extraParams;
+    let lastParam;
+    console.log("params: ",req.params)
+    console.log("len: ", Object.keys(req.params).length)
+    const len = Object.keys(req.params).length
+    if (req.params && Object.keys(req.params).length >= 2) {
+      extraParams = Object.values(req.params).filter(Boolean).shift();
+      lastParam = Object.values(req.params.subfolder).join('').split('/').pop() || req.params.subfolder
+      // this is to avoid the annoying {0} object that duplicates the first param.
+    } else if (req.params && Object.keys(req.params).length < 2) {
+      extraParams = Object.values(req.params).filter(Boolean);
+    }
+    console.log("extra params: ", extraParams)
+    console.log("root URL: ", req.get('host'))
+    console.log("last param: ",lastParam)
+
     if (req.isNavigateUp) {
-      // const parentPath = path.dirname(userPath);
-      // req.parentPath = parentPath;
       const currentUrlPath = req.path;
       const parentUrlPath = path.posix.dirname(currentUrlPath);
-      req.parentPath = parentUrlPath
-      console.log(parentUrlPath)
-    }
+      req.parentPath = path.join(req.get('host'), parentUrlPath,"/", extraParams);
+      req.goUpPath = `${req.protocol}://${req.get('host')}${parentUrlPath}`;
+      req.lastParam = lastParam
+      console.log("getProtocol: ",req.protocol)
+      console.log("goUpPath: ", req.goUpPath)
+      console.log("parent URL Path: ",parentUrlPath);
+      console.log("Full URL: ", req.get('host'), parentUrlPath)
+      console.log("Full URL + params: ", req.get('host'), parentUrlPath,"/", extraParams)
+      console.log("req.parentPath: ", req.parentPath)
+
+      try {
+        const items = fs.readdirSync(userPath);
+        const directories = [];
+        const files = [];
+  
+        items.forEach((item) => {
+          const itemPath = path.join(userPath, item);
+          const stat = fs.lstatSync(itemPath);
+          if (stat.isDirectory()) {
+            directories.push(item);
+          }
+          if (stat.isFile()) files.push(item);
+        });
+        req.directories = { type: "directory", directories: directories };
+        req.files = { type: "file", files: files };
+  
+        next();
+      } catch (err) {
+        res.status(500).json({ error: err.message });
+      }
+
+    } else
     try {
       const items = fs.readdirSync(userPath);
       const directories = [];

@@ -58,12 +58,14 @@ async function getDelete(req, res) {
 }
 
 async function getUpload(req, res) {
+  console.log(req.params.subfolder)
   res.render("../views/upload", {
     user: req.user,
     directories: req.directories,
     files: req.files,
     parentPath: req.parentPath,
-    currentURL: global.CurrentURL,
+    goUpPath: req.goUpPath,
+    lastParam: req.lastParam,
   });
 }
 
