@@ -163,21 +163,32 @@ const fileManager = {
     }
   },
   updateDirName: (req, res, next) => {
-
-    console.log("req.params.oldName: ",req.params.oldName.slice(7))
-    console.log("req.params.newName: ",req.body.newName)
-
     const dirName = req.body.newName;
     const rootDirPath = path.join(BASE_DIR, req.user.user_id.toString());
-    console.log("rootDirPath: ", rootDirPath)
-    const oldName = path.join(rootDirPath, req.params.oldName.slice(7)); // to hardcoding remove "/upload"
-    const rootPath = oldName.split("/").slice(0, -1).join("/") || "/";
-    const newName = path.join(rootPath, dirName);
-    console.log("new name: ",newName)
-    fs.rename(oldName, newName, (err) => {
-      if (err) throw err;
-      console.log("directory name updated successfullly!");
-    });
+
+    // If on subfolder...
+    if (req.params.oldName.toString().includes("/")) {
+      (console.log("hereAqui"))
+      const oldName = path.join(rootDirPath, req.params.oldName.slice(7)); // to hardcoding remove "/upload"
+      console.log("oldname: ", oldName)
+      const fixedName = path.posix.dirname(oldName)
+      console.log("req.path: ", req.path)
+      console.log("req.params.oldName: ", req.params.oldName)
+      const rootPath = path.join(rootDirPath, oldName);
+      const newName = path.join(fixedName, dirName);
+      fs.rename(oldName, newName, (err) => {
+        if (err) throw err;
+        console.log("directory name updated successfullly!");
+      });
+      // else if on root...
+    } else {
+      const oldName = path.join(rootDirPath, req.params.oldName);
+      const newName = path.join(rootDirPath, dirName);
+      fs.rename(oldName, newName, (err) => {
+        if (err) throw err;
+        console.log("directory name updated successfullly!");
+      });
+    }
     next();
   },
 

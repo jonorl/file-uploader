@@ -65,7 +65,7 @@
     <% files.files.forEach(file => { %>
     <div class="file-container">
       <p><%= file %></p>
-      <a class="edit" href="/file-new-name/<%= file %>">
+      <a class="edit" href="/file-new-name<%= uploadPath %>/<%= file %>">
         <i id="<%= file %>" class="fas fa-edit"></i>
       </a>
       <a class="delete" href="/file-delete/<%= file %>">

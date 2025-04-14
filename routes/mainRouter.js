@@ -39,7 +39,7 @@ mainRouter.get(
   mainController.getDirEdit
 );
 
-mainRouter.get("/file-new-name/:file", mainController.getFileEdit);
+mainRouter.get("/file-new-name/:file(*)", mainController.getFileEdit);
 
 mainRouter.get(
   "/dir-delete/:dir",
@@ -89,7 +89,7 @@ mainRouter.post(
 );
 
 mainRouter.post(
-  "/file-new-name/:oldName/",
+  "/file-new-name/:oldName(*)/",
   fileManager.updateFileName,
   mainController.postDirEdit
 );

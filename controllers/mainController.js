@@ -186,11 +186,13 @@ async function postUpload(req, res) {
 }
 
 async function postNewDir(req, res) {
-  res.redirect("back");
+    const redirectTo = req.body.redirectTo || "/";
+    res.redirect(redirectTo);
 }
 
 async function postDirEdit(req, res) {
-  res.redirect("Referrer");
+    const redirectTo = req.body.redirectTo || "/";
+    res.redirect(redirectTo);
 }
 
 async function postNewName(req, res) {
