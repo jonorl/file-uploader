@@ -53,18 +53,25 @@
     <div class="dir-container">
       <a class="navigate" href="<%=parentPath%>/<%= dir %>"><%= dir %> </a>
 
+      <a class="details" href="/dir-details<%= uploadPath %>/<%= dir %>">
+        <i id="<%= dir %>" class="fas fa-eye"></i>
+      </a>
       <a class="edit" href="/dir-new-name<%= uploadPath %>/<%= dir %>">
         <i id="<%= dir %>" class="fas fa-edit"></i>
       </a>
       <a class="delete" href="/dir-delete/<%= uploadPath %>/<%= dir %>">
         <i id="<%= dir %>" class="fas fa-trash-alt"></i>
       </a>
+
     </div>
     <% })} %>
     <h1>Files</h1>
     <% files.files.forEach(file => { %>
     <div class="file-container">
       <p><%= file %></p>
+      <a class="details" href="/file-details/<%= uploadPath %>/<%= file %>">
+        <i id="<%= file %>" class="fas fa-eye"></i>
+      </a>
       <a class="edit" href="/file-new-name<%= uploadPath %>/<%= file %>">
         <i id="<%= file %>" class="fas fa-edit"></i>
       </a>
