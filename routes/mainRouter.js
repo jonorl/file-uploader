@@ -48,7 +48,7 @@ mainRouter.get(
 );
 
 mainRouter.get(
-  "/file-delete/:file",
+  "/file-delete/:file(*)",
   fileManager.deleteFile,
   mainController.getDel
 );

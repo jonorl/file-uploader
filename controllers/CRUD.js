@@ -218,8 +218,6 @@ const fileManager = {
   },
   deleteDir: (req, res, next) => {
     const rootDirPath = path.join(BASE_DIR, req.user.user_id.toString());
-    console.log("rootDirPath: ",rootDirPath)
-    console.log("req.params.dir: ",req.params.dir.slice(7)); // to hardcoding remove "/upload")
     let newDirPath = path.join(rootDirPath, req.params.dir);
     const referer = req.get("Referer");
     console.log("referer: ",referer)
@@ -232,7 +230,7 @@ const fileManager = {
       subfolderPath = match && match[1] ? match[1] : "";
     }
     // if not on root
-    if (typeof subfolderPath === "undefined" || subfolderPath !== "/") {
+    if (typeof subfolderPath === "undefined" || subfolderPath !== "" || subfolderPath !== "/") {
       newDirPath = path.join(rootDirPath, req.params.dir.slice(7)); // to hardcoding remove "/upload");
     }
 
@@ -248,13 +246,36 @@ const fileManager = {
     }
   },
   deleteFile: (req, res, next) => {
-    const fileName = req.params.file;
-    const rootDirPath = getPath(req, res);
-    const fullPath = path.join(rootDirPath, fileName);
-    fs.unlink(fullPath, (err) => {
-      if (err) throw err;
-      console.log("file deleted successfullly!");
-    });
+    const rootDirPath = path.join(BASE_DIR, req.user.user_id.toString());
+    let newDirPath = path.join(rootDirPath, req.params.file);
+    const referer = req.get("Referer");
+    console.log("referer: ",referer)
+    let subfolderPath;
+
+    if (referer) {
+      const url = new URL(referer);
+      const match = url.pathname.match(/^\/upload(\/.*)?$/);
+
+      subfolderPath = match && match[1] ? match[1] : "";
+      console.log("subfolderPath: ", subfolderPath)
+      console.log("subfolderPath type: ", typeof subfolderPath)
+    }
+    // if not on root
+    if (typeof subfolderPath === "undefined" || subfolderPath !== "" || subfolderPath !== "/") {
+      console.log("aquiiii")
+      newDirPath = path.join(rootDirPath, req.params.file.slice(7)); // to hardcoding remove "/upload");
+    }
+
+    try {
+      fs.unlink(newDirPath, (err) => {
+        if (err) throw err;
+        console.log("File deleted successfullly!");
+      });
+      console.log("File deleted.");
+      next();
+    } catch (err) {
+      return res.status(500).json({ error: err.message });
+    }
     next();
   },
 };
