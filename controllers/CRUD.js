@@ -202,7 +202,6 @@ const fileManager = {
     if (req.params.oldName.toString().includes("/")) {
       const oldName = path.join(rootDirPath, req.params.oldName.slice(7)); // to hardcoding remove "/upload"
       const fixedName = path.posix.dirname(oldName);
-      const rootPath = path.join(rootDirPath, oldName);
       const newName = path.join(fixedName, fileName);
       fs.rename(oldName, newName, (err) => {
         if (err) throw err;
@@ -218,14 +217,35 @@ const fileManager = {
     next();
   },
   deleteDir: (req, res, next) => {
-    const dirName = req.params.dir;
-    const rootDirPath = getPath(req, res);
-    const fullPath = path.join(rootDirPath, dirName);
-    fs.rm(fullPath, { recursive: true }, (err) => {
-      if (err) throw err;
-      console.log("directory deleted successfullly!");
-    });
-    next();
+    const rootDirPath = path.join(BASE_DIR, req.user.user_id.toString());
+    console.log("rootDirPath: ",rootDirPath)
+    console.log("req.params.dir: ",req.params.dir.slice(7)); // to hardcoding remove "/upload")
+    let newDirPath = path.join(rootDirPath, req.params.dir);
+    const referer = req.get("Referer");
+    console.log("referer: ",referer)
+    let subfolderPath;
+
+    if (referer) {
+      const url = new URL(referer);
+      const match = url.pathname.match(/^\/upload(\/.*)?$/);
+
+      subfolderPath = match && match[1] ? match[1] : "";
+    }
+    // if not on root
+    if (typeof subfolderPath === "undefined" || subfolderPath !== "/") {
+      newDirPath = path.join(rootDirPath, req.params.dir.slice(7)); // to hardcoding remove "/upload");
+    }
+
+    try {
+      fs.rm(newDirPath, { recursive: true }, (err) => {
+        if (err) throw err;
+        console.log("directory deleted successfullly!");
+      });
+      console.log("Directory deleted.");
+      next();
+    } catch (err) {
+      return res.status(500).json({ error: err.message });
+    }
   },
   deleteFile: (req, res, next) => {
     const fileName = req.params.file;

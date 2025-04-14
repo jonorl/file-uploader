@@ -23,7 +23,7 @@ mainRouter.get("/logout", mainController.getLogout);
 
 mainRouter.get("/profile", mainController.getProfile);
 
-mainRouter.get("/delete/:messageId", mainController.getDelete);
+mainRouter.get("/delete/:messageId(*)", mainController.getDelete);
 
 mainRouter.get("/upload", checkDir, fileManager.read, mainController.getUpload);
 
@@ -42,7 +42,7 @@ mainRouter.get(
 mainRouter.get("/file-new-name/:file(*)", mainController.getFileEdit);
 
 mainRouter.get(
-  "/dir-delete/:dir",
+  "/dir-delete/:dir(*)",
   fileManager.deleteDir,
   mainController.getDel
 );

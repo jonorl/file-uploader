@@ -56,7 +56,7 @@
       <a class="edit" href="/dir-new-name<%= uploadPath %>/<%= dir %>">
         <i id="<%= dir %>" class="fas fa-edit"></i>
       </a>
-      <a class="delete" href="/dir-delete/<%= dir %>">
+      <a class="delete" href="/dir-delete/<%= uploadPath %>/<%= dir %>">
         <i id="<%= dir %>" class="fas fa-trash-alt"></i>
       </a>
     </div>
@@ -68,7 +68,7 @@
       <a class="edit" href="/file-new-name<%= uploadPath %>/<%= file %>">
         <i id="<%= file %>" class="fas fa-edit"></i>
       </a>
-      <a class="delete" href="/file-delete/<%= file %>">
+      <a class="delete" href="/file-delete<%= uploadPath %>/<%= file %>">
         <i id="<%= file %>" class="fas fa-trash-alt"></i>
       </a>
     </div>
