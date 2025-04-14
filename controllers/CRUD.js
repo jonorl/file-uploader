@@ -141,13 +141,8 @@ const fileManager = {
 
     console.log("undefined?: ",typeof subfolderPath )
     if (typeof subfolderPath !== 'undefined') {
-      const currentUrlPath = req.path;
-      const parentUrlPath = path.posix.dirname(currentUrlPath);
-      // req.goUpPath = `${parentUrlPath}`;
       newDirPath = path.join(rootDirPath, subfolderPath, req.body.dirName);
       console.log("aca")
-      console.log("currentURLPath: ", currentUrlPath)
-      console.log("parentURLPath: ", parentUrlPath)
       console.log("newDirPath: ", newDirPath)
     }
 
