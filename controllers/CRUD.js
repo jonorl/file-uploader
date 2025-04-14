@@ -49,10 +49,11 @@ const fileManager = {
     // if on a subfolder
     if (req.isNavigateUp) {
       const currentUrlPath = req.path;
+      console.log("req path: ", req.path)
       const parentUrlPath = path.posix.dirname(currentUrlPath);
       req.parentPath = `${req.protocol}://${req.get(
         "host"
-      )}${parentUrlPath}/${extraParams}`;
+      )}${parentUrlPath}/${lastParam}`;
       console.log("this parentPath: ", req.parentPath);
       req.goUpPath = `${req.protocol}://${req.get("host")}${parentUrlPath}`;
       req.lastParam = lastParam;
