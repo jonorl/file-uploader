@@ -66,7 +66,9 @@ async function getUpload(req, res) {
     parentPath: req.parentPath,
     goUpPath: req.goUpPath,
     lastParam: req.lastParam,
-    showGoUp: req.showGoUp
+    showGoUp: req.showGoUp,
+    parentUrlPath: req.parentURLPath,
+    uploadPath: req.uploadPath
   });
 }
 
@@ -188,7 +190,7 @@ async function postNewDir(req, res) {
 }
 
 async function postDirEdit(req, res) {
-  res.redirect("/upload");
+  res.redirect("Referrer");
 }
 
 async function postNewName(req, res) {

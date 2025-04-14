@@ -30,7 +30,7 @@ const fileManager = {
     console.log("len: ", Object.keys(req.params).length);
     const len = Object.keys(req.params).length;
 
-        // get params if any
+    // get params if any
 
     if (req.params && Object.keys(req.params).length >= 2) {
       extraParams = Object.values(req.params).filter(Boolean).shift();
@@ -44,12 +44,14 @@ const fileManager = {
     console.log("extra params: ", extraParams);
     console.log("root URL: ", req.get("host"));
     console.log("last param: ", lastParam);
-    console.log(req.isNavigateUp)
+    console.log(req.isNavigateUp);
 
     // if on a subfolder
     if (req.isNavigateUp) {
+      console.log("navigate is up")
       const currentUrlPath = req.path;
-      console.log("req path: ", req.path)
+      console.log("req path: ", req.path);
+      req.uploadPath = req.path
       const parentUrlPath = path.posix.dirname(currentUrlPath);
       req.parentPath = `${req.protocol}://${req.get(
         "host"
@@ -57,6 +59,7 @@ const fileManager = {
       console.log("this parentPath: ", req.parentPath);
       req.goUpPath = `${req.protocol}://${req.get("host")}${parentUrlPath}`;
       req.lastParam = lastParam;
+      req.parentURLPath = parentUrlPath
       console.log("getProtocol: ", req.protocol);
       console.log("current URL: ", req.currentUrlPath);
       console.log("goUpPath: ", req.goUpPath);
@@ -84,7 +87,7 @@ const fileManager = {
           }
           if (stat.isFile()) files.push(item);
         });
-        req.showGoUp = true
+        req.showGoUp = true;
         req.directories = { type: "directory", directories: directories };
         req.files = { type: "file", files: files };
 
@@ -129,21 +132,22 @@ const fileManager = {
   create: (req, res, next) => {
     const rootDirPath = getPath(req, res);
     let newDirPath = path.join(rootDirPath, req.body.dirName);
-    const referer = req.get('Referer');
+    const referer = req.get("Referer");
     let subfolderPath;
 
     if (referer) {
       const url = new URL(referer);
       const match = url.pathname.match(/^\/upload(\/.*)?$/);
-    
-      subfolderPath = match && match[1] ? match[1] : '';
-      console.log("subPath:", subfolderPath);}
 
-    console.log("undefined?: ",typeof subfolderPath )
-    if (typeof subfolderPath !== 'undefined') {
+      subfolderPath = match && match[1] ? match[1] : "";
+      console.log("subPath:", subfolderPath);
+    }
+
+    console.log("undefined?: ", typeof subfolderPath);
+    if (typeof subfolderPath !== "undefined") {
       newDirPath = path.join(rootDirPath, subfolderPath, req.body.dirName);
-      console.log("aca")
-      console.log("newDirPath: ", newDirPath)
+      console.log("aca");
+      console.log("newDirPath: ", newDirPath);
     }
 
     try {
@@ -159,10 +163,17 @@ const fileManager = {
     }
   },
   updateDirName: (req, res, next) => {
+
+    console.log("req.params.oldName: ",req.params.oldName.slice(7))
+    console.log("req.params.newName: ",req.body.newName)
+
     const dirName = req.body.newName;
-    const rootDirPath = getPath(req, res);
-    const oldName = path.join(rootDirPath, req.params.oldName);
-    const newName = path.join(rootDirPath, dirName);
+    const rootDirPath = path.join(BASE_DIR, req.user.user_id.toString());
+    console.log("rootDirPath: ", rootDirPath)
+    const oldName = path.join(rootDirPath, req.params.oldName.slice(7)); // to hardcoding remove "/upload"
+    const rootPath = oldName.split("/").slice(0, -1).join("/") || "/";
+    const newName = path.join(rootPath, dirName);
+    console.log("new name: ",newName)
     fs.rename(oldName, newName, (err) => {
       if (err) throw err;
       console.log("directory name updated successfullly!");

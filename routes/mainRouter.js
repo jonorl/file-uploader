@@ -25,14 +25,19 @@ mainRouter.get("/profile", mainController.getProfile);
 
 mainRouter.get("/delete/:messageId", mainController.getDelete);
 
-mainRouter.get(
-  "/upload",
-  checkDir,
-  fileManager.read,
-  mainController.getUpload
-);
+mainRouter.get("/upload", checkDir, fileManager.read, mainController.getUpload);
 
-mainRouter.get("/dir-new-name/:dir", mainController.getDirEdit);
+mainRouter.get(
+  "/dir-new-name/:dir(*)",
+  // (req, res, next) => {
+  //   let pathHelper;
+  //   if (req.path.substring(req.path.length - 1) === "/") {
+  //     pathHelper = req.path.substring(0, req.path.length - 1);
+  //   } else pathHelper = req.path;
+  //   next();
+  // },
+  mainController.getDirEdit
+);
 
 mainRouter.get("/file-new-name/:file", mainController.getFileEdit);
 
@@ -78,7 +83,7 @@ mainRouter.post("/upload", checkDir, upload, mainController.postUpload);
 mainRouter.post("/newDir", fileManager.create, mainController.postNewDir);
 
 mainRouter.post(
-  "/dir-new-name/:oldName/",
+  "/dir-new-name/:oldName(*)/",
   fileManager.updateDirName,
   mainController.postDirEdit
 );
