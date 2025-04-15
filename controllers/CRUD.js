@@ -155,7 +155,7 @@ const fileManager = {
       }
   },
 
-  create: (req, res, next) => {
+  create: async (req, res, next) => {
     const rootDirPath = getPath(req, res);
     let newDirPath = path.join(rootDirPath, req.body.dirName);
     const referer = req.get("Referer");
@@ -175,6 +175,7 @@ const fileManager = {
     }
 
     try {
+
       if (fs.existsSync(newDirPath)) {
         return res.status(409).json({ error: "Directory already exists." });
       }
@@ -283,7 +284,7 @@ const fileManager = {
     // if not on root
     if (
       typeof subfolderPath === "undefined" ||
-      subfolderPath !== "" ||
+      subfolderPath !== "" &&
       subfolderPath !== "/"
     ) {
       newDirPath = path.join(rootDirPath, req.params.file.slice(7)); // to hardcoding remove "/upload");

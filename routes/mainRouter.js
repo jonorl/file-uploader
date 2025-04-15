@@ -5,7 +5,7 @@ const mainController = require("../controllers/mainController");
 const { validateUser } = require("../controllers/formValidation");
 const { validateEmail } = require("../controllers/emailDuplicateValidation");
 const { validateMembership } = require("../controllers/profileValidator");
-const { upload } = require("../controllers/multer");
+const { upload, cloudinaryUpload } = require("../controllers/multer");
 const { checkDir } = require("../controllers/checkDir");
 const fileManager = require("../controllers/CRUD");
 
@@ -84,7 +84,26 @@ mainRouter.post("/new-message", mainController.postNewMessage);
 
 mainRouter.post("/profile", validateMembership, mainController.postProfile);
 
-mainRouter.post("/upload", checkDir, upload, mainController.postUpload);
+mainRouter.post(
+  "/upload",
+  checkDir,
+  (req, res, next) => {
+    upload(req, res, async (err) => {
+      if (err) {
+        return res.status(400).send(err);
+      }
+
+      try {
+        const result = await cloudinaryUpload(req.file.path);
+        req.uploadResult = result;
+        next();
+      } catch (error) {
+        res.status(500).send(error);
+      }
+    });
+  },
+  mainController.postUpload
+);
 
 mainRouter.post("/newDir", fileManager.create, mainController.postNewDir);
 
