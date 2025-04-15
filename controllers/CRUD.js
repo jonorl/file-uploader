@@ -307,43 +307,44 @@ const fileManager = {
     const referer = req.get("Referer");
     let subfolderPath;
 
-    console.log("file newDirPath: ",newDirPath)
+    console.log("file newDirPath: ", newDirPath);
 
     if (referer) {
       const url = new URL(referer);
       const match = url.pathname.match(/^\/upload(\/.*)?$/);
 
       subfolderPath = match && match[1] ? match[1] : "";
+      console.log("subfolderPathFile: ", subfolderPath);
     }
     // if not on root
+    console.log("IF STATMENT: ", typeof subfolderPath === "undefined" &&
+      subfolderPath !== "" &&
+      subfolderPath !== "/")
     if (
       typeof subfolderPath === "undefined" ||
-      subfolderPath !== "" ||
+      subfolderPath !== "" &&
       subfolderPath !== "/"
     ) {
-      // rootDirPath = path.join(rootDirPath, req.params.file.slice(7)); // to hardcoding remove "/upload");
+      console.log("hereeeee")
+      newDirPath = path.join(rootDirPath, req.params.file.slice(7)); // to hardcoding remove "/upload");
+      console.log("newDirPath: ", newDirPath);
     }
 
     try {
-      const items = fs.readdirSync(rootDirPath);
-
-      items.forEach((item) => {
-        const itemPath = path.join(rootDirPath, item);
-        const stat = fs.lstatSync(itemPath);
-        if (stat.isFile()) {
-          req.fileWhere = newDirPath;
-          const size = Math.round(stat.size / 1000); // Divided by 1,000 for kb
-          if (size < 1000) {
-            req.fileSize = size;
-            req.fileSizeUnit = "kb";
-          } else {
-            req.fileSize = Math.round((size / 1000) * 10) / 10; // Divided by 1,000 for MB
-            req.fileSizeUnit = "MB";
-          }
-          req.fileDateCreated = stat.birthtime;
-          req.fileLastModified = stat.mtime;
+      const stat = fs.lstatSync(newDirPath);
+      if (stat.isFile()) {
+        req.fileWhere = newDirPath;
+        const size = Math.round(stat.size / 1000); // Divided by 1,000 for kb
+        if (size < 1000) {
+          req.fileSize = size;
+          req.fileSizeUnit = "kb";
+        } else {
+          req.fileSize = Math.round((size / 1000) * 10) / 10; // Divided by 1,000 for MB
+          req.fileSizeUnit = "MB";
         }
-      });
+        req.fileDateCreated = stat.birthtime;
+        req.fileLastModified = stat.mtime;
+      }
     } catch (err) {
       return res.status(500).json({ error: err.message });
     }
