@@ -67,15 +67,21 @@
         <i id="<%= dir %>" class="fas fa-trash-alt"></i>
       </a>
     </div>
-    <% })} %>
+    <% }) %> <% } %>
     <h1>Files</h1>
     <% files.files.forEach(file => { %>
     <div class="file-container">
+      <% if (showGoUp) { %>
       <a
         class="download"
         href="<%= parentUrlPath %>s/<%= user.user_id %><%= parentPathTrimmed %>/<%= file %>"
         ><%= file %>
       </a>
+      <% } else {%>
+      <a class="download" href="uploads/<%= user.user_id %>/<%= file %>"
+        ><%= file %>
+      </a>
+      <% }%>
 
       <a class="details" href="/file-details<%= uploadPath %>/<%= file %>">
         <i id="<%= file %>" class="fas fa-eye"></i>
