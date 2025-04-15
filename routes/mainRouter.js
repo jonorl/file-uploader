@@ -90,21 +90,6 @@ mainRouter.post(
   checkDir,
   upload,
   cloudinaryFileManager.create,
-  // (req, res, next) => {
-  //   upload(req, res, async (err) => {
-  //     if (err) {
-  //       return res.status(400).send(err);
-  //     }
-
-  //     try {
-  //       const result = await cloudinaryUpload(req.file.path);
-  //       req.uploadResult = result;
-  //       next();
-  //     } catch (error) {
-  //       res.status(500).send(error);
-  //     }
-  //   });
-  // },
   mainController.postUpload
 );
 

@@ -1,5 +1,4 @@
 const multer = require("multer");
-// const cloudinary = require('../controllers/cloudinary');
 
 const storage = multer.diskStorage({
   
@@ -17,10 +16,4 @@ let upload = multer({ storage: storage });
 
 upload = upload.single('avatar')
 
-// const cloudinaryUpload = (filePath) => {
-//   return cloudinary.uploader.upload(filePath, {
-//     resource_type: 'auto'
-//   });
-// };
-
-module.exports = { upload, /* cloudinaryUpload */ };
+module.exports = { upload };
