@@ -67,9 +67,9 @@ mainRouter.get(
 );
 
 mainRouter.get(
-  "/dir-details/:dir(*)",
-  fileManager.dirDetails,
-  mainController.getDirDetails
+  "/file-details/:file(*)",
+  fileManager.fileDetails,
+  mainController.getFileDetails
 );
 
 mainRouter.post(

@@ -97,10 +97,14 @@ async function getDel(req, res) {
   res.redirect("/upload");
 }
 
-async function getDirDetails(req, res) {
-  res.render("../views/dir-details", {
-    totalSize: req.totalSize,
+async function getFileDetails(req, res) {
+  res.render("../views/file-details", {
     user: req.user,
+    fileSize: req.fileSize,
+    fileSizeUnit: req.fileSizeUnit,
+    fileDateCreated: req.fileDateCreated,
+    fileLastModified: req.fileLastModified,
+    fileWhere: req.fileWhere,
   })
 }
 
@@ -223,7 +227,7 @@ module.exports = {
   getDirEdit,
   getFileEdit,
   getDel,
-  getDirDetails,
+  getFileDetails,
   postSignUp,
   postLogin,
   postNewMessage,

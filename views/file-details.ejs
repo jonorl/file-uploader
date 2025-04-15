@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="/styles.css" />
-    <title>Rename</title>
+    <title>File Details</title>
   </head>
   <header>
     <a href="/">Home</a>
@@ -25,13 +25,11 @@
     <% } %>
   </header>
   <body>
-    <p><%=oldName%></p>
     <% if (user) { %> <% if (user.role === "user") { %>
-    <form action="/file-new-name/<%=oldName%>" method="POST">
-      <label for="newName">New Name</label>
-      <input id="newName" name="newName" type="text" placeholder="New name" />
-      <button type="submit">Rename</button>
-    </form>
+    <p><%= fileWhere %></p>
+    <p>File size: <%= fileSize %><%= fileSizeUnit %></p>
+    <p>Date created: <%= fileDateCreated %></p>
+    <p>Date last modified: <%= fileLastModified %></p>
     <% }} %>
   </body>
 </html>

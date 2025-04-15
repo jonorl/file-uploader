@@ -93,6 +93,9 @@ const fileManager = {
           const itemPath = path.join(userPath, item);
           console.log("item path: ", itemPath);
           const stat = fs.lstatSync(itemPath);
+          req.fileSize = stat.size;
+          req.fileDateCreated = stat.birthtime;
+          req.fileLastModified = stat.mtime;
           if (stat.isDirectory()) {
             directories.push(item);
           }
@@ -298,12 +301,13 @@ const fileManager = {
     }
     next();
   },
-  dirDetails: async (req, res, next) => {
-    const rootDirPath = path.join(BASE_DIR, req.user.user_id.toString());
-    let newDirPath = path.join(rootDirPath, req.params.dir);
+  fileDetails: (req, res, next) => {
+    let rootDirPath = path.join(BASE_DIR, req.user.user_id.toString());
+    let newDirPath = path.join(rootDirPath, req.params.file);
     const referer = req.get("Referer");
     let subfolderPath;
-    let totalSize = 0;
+
+    console.log("file newDirPath: ",newDirPath)
 
     if (referer) {
       const url = new URL(referer);
@@ -317,30 +321,33 @@ const fileManager = {
       subfolderPath !== "" ||
       subfolderPath !== "/"
     ) {
-      newDirPath = path.join(rootDirPath, req.params.dir.slice(7)); // to hardcoding remove "/upload");
+      // rootDirPath = path.join(rootDirPath, req.params.file.slice(7)); // to hardcoding remove "/upload");
     }
 
     try {
-      const items = await fsPromise.readdir(newDirPath, {
-        withFileTypes: true,
-      });
+      const items = fs.readdirSync(rootDirPath);
 
-      for (const item of items) {
-        const itemPath = path.join(newDirPath, item.name);
-        const stats = await fsPromise.stat(itemPath);
-
-        if (item.isDirectory()) {
-          totalSize += await getDirectorySize(itemPath); // recursive
-        } else {
-          totalSize += stats.size;
+      items.forEach((item) => {
+        const itemPath = path.join(rootDirPath, item);
+        const stat = fs.lstatSync(itemPath);
+        if (stat.isFile()) {
+          req.fileWhere = newDirPath;
+          const size = Math.round(stat.size / 1000); // Divided by 1,000 for kb
+          if (size < 1000) {
+            req.fileSize = size;
+            req.fileSizeUnit = "kb";
+          } else {
+            req.fileSize = Math.round((size / 1000) * 10) / 10; // Divided by 1,000 for MB
+            req.fileSizeUnit = "MB";
+          }
+          req.fileDateCreated = stat.birthtime;
+          req.fileLastModified = stat.mtime;
         }
-      }
-      req.totalSize = totalSize; //in bytes
-      next();
+      });
     } catch (err) {
       return res.status(500).json({ error: err.message });
     }
+    next();
   },
 };
-
 module.exports = fileManager;

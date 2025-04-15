@@ -73,7 +73,7 @@
     <% files.files.forEach(file => { %>
     <div class="file-container">
       <p><%= file %></p>
-      <a class="details" href="/file-details/<%= uploadPath %>/<%= file %>">
+      <a class="details" href="/file-details<%= uploadPath %>/<%= file %>">
         <i id="<%= file %>" class="fas fa-eye"></i>
       </a>
       <a class="edit" href="/file-new-name<%= uploadPath %>/<%= file %>">
