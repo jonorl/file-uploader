@@ -21,6 +21,9 @@ const db = require("./db/queries");
 // Load Routers
 const mainRouter = require("./routes/mainRouter");
 
+// load Cloudinary
+const cloudinary = require("./controllers/cloudinary")
+
 // Add this code to make it possible to render .ejs files
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
