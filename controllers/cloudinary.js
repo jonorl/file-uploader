@@ -1,4 +1,5 @@
 const { v2: cloudinary } = require("cloudinary");
+const path = require("path");
 require("dotenv").config();
 
 (async function () {
@@ -8,38 +9,20 @@ require("dotenv").config();
     api_key: process.env.CLOUDINARY_API_KEY,
     api_secret: process.env.CLOUDINARY_API_SECRET,
   });
-
-  // Upload an image
-  const uploadResult = await cloudinary.uploader
-    .upload(
-      "https://res.cloudinary.com/demo/image/upload/getting-started/shoes.jpg",
-      {
-        public_id: "shoes",
-      }
-    )
-    .catch((error) => {
-      console.log(error);
-    });
-
-  console.log(uploadResult);
-
-  // Optimize delivery by resizing and applying auto-format and auto-quality
-  const optimizeUrl = cloudinary.url("shoes", {
-    fetch_format: "auto",
-    quality: "auto",
-  });
-
-  console.log(optimizeUrl);
-
-  // Transform the image: auto-crop to square aspect_ratio
-  const autoCropUrl = cloudinary.url("shoes", {
-    crop: "auto",
-    gravity: "auto",
-    width: 500,
-    height: 500,
-  });
-
-  console.log(autoCropUrl);
 })();
 
-module.exports = cloudinary;
+const cloudinaryFileManager = {
+  read: (req, res, next) => {
+    next();
+  },
+  create: (req, res, next) => {
+    // req.file.path comes from Multer (a.k.a "upload" on router)
+    cloudinaryUpload = cloudinary.uploader.upload(req.file.path, {
+      resource_type: "auto",
+    });
+    req.uploadResult = cloudinaryUpload;
+    next();
+  },
+};
+
+module.exports = cloudinaryFileManager;
