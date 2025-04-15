@@ -115,6 +115,9 @@ app.use(express.static(assetsPath));
 // Add this code to parse data to POST requests
 app.use(express.urlencoded({ extended: true }));
 
+// Make the uploads folder static
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
 // Set port to whatever is on .env otherwise use 3000
 const PORT = process.env.PORT || 3000;
 

@@ -45,7 +45,7 @@
       <form action="/newDir" method="POST">
         <label for="newDir">New folder</label>
         <input type="text" name="dirName" />
-        <input type="hidden" name="subfolder" value="<%= goUpPath %>">
+        <input type="hidden" name="subfolder" value="<%= goUpPath %>" />
         <% if (typeof errors !== 'undefined' && errors.length > 0) { %>
         <ul class="errors">
           <% errors.forEach(error => { %>
@@ -66,13 +66,17 @@
       <a class="delete" href="/dir-delete/<%= uploadPath %>/<%= dir %>">
         <i id="<%= dir %>" class="fas fa-trash-alt"></i>
       </a>
-
     </div>
     <% })} %>
     <h1>Files</h1>
     <% files.files.forEach(file => { %>
     <div class="file-container">
-      <p><%= file %></p>
+      <a
+        class="download"
+        href="<%= parentUrlPath %>s/<%= user.user_id %><%= parentPathTrimmed %>/<%= file %>"
+        ><%= file %>
+      </a>
+
       <a class="details" href="/file-details<%= uploadPath %>/<%= file %>">
         <i id="<%= file %>" class="fas fa-eye"></i>
       </a>

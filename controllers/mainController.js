@@ -64,6 +64,7 @@ async function getUpload(req, res) {
     directories: req.directories,
     files: req.files,
     parentPath: req.parentPath,
+    parentPathTrimmed: req.parentPath.substring(28),
     goUpPath: req.goUpPath,
     lastParam: req.lastParam,
     showGoUp: req.showGoUp,
