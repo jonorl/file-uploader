@@ -68,7 +68,12 @@ async function getUpload(req, res) {
     lastParam: req.lastParam,
     showGoUp: req.showGoUp,
     parentUrlPath: req.parentURLPath,
-    uploadPath: req.uploadPath
+    uploadPath: req.uploadPath,
+    size: req.size,
+    dateCreated: req.dateCreated,
+    lastModified: req.lastModified,
+    where: req.where,
+    sizeUnit: req.sizeUnit,
   });
 }
 
@@ -90,6 +95,13 @@ async function getFileEdit(req, res) {
 
 async function getDel(req, res) {
   res.redirect("/upload");
+}
+
+async function getDirDetails(req, res) {
+  res.render("../views/dir-details", {
+    totalSize: req.totalSize,
+    user: req.user,
+  })
 }
 
 async function postSignUp(req, res, next) {
@@ -211,6 +223,7 @@ module.exports = {
   getDirEdit,
   getFileEdit,
   getDel,
+  getDirDetails,
   postSignUp,
   postLogin,
   postNewMessage,

@@ -66,6 +66,12 @@ mainRouter.get(
   mainController.getUpload
 );
 
+mainRouter.get(
+  "/dir-details/:dir(*)",
+  fileManager.dirDetails,
+  mainController.getDirDetails
+);
+
 mainRouter.post(
   "/sign-up",
   [...validateUser, ...validateEmail],

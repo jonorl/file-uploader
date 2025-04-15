@@ -34,6 +34,13 @@
     <% if (showGoUp) { %>
     <a class="goUp" href="<%=goUpPath%>">Go Up</a>
     <% } %>
+    <div class="dirStats">
+      <h2>Stats:</h2>
+      <p>Where: <%=where%></p>
+      <p>Size: <%=size%> <%=sizeUnit%></p>
+      <p>Created on: <%=dateCreated%></p>
+      <p>Lat modified: <%=lastModified%></p>
+    </div>
     <div class="addDir">
       <form action="/newDir" method="POST">
         <label for="newDir">New folder</label>
@@ -53,9 +60,6 @@
     <div class="dir-container">
       <a class="navigate" href="<%=parentPath%>/<%= dir %>"><%= dir %> </a>
 
-      <a class="details" href="/dir-details<%= uploadPath %>/<%= dir %>">
-        <i id="<%= dir %>" class="fas fa-eye"></i>
-      </a>
       <a class="edit" href="/dir-new-name<%= uploadPath %>/<%= dir %>">
         <i id="<%= dir %>" class="fas fa-edit"></i>
       </a>

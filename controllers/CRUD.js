@@ -1,4 +1,5 @@
 const fs = require("fs");
+const fsPromise = require("fs").promises;
 const { get } = require("http");
 const path = require("path");
 
@@ -16,9 +17,26 @@ const getPath = (req, res) => {
     const extraParams = Object.values(req.params).filter(Boolean).shift();
     userDirPath = path.join(userDirPath, extraParams);
   }
-  console.log("getPath: ", userDirPath);
   return userDirPath;
 };
+
+function getDirectorySizeSync(dirPath) {
+  let totalSize = 0;
+  const entries = fs.readdirSync(dirPath, { withFileTypes: true });
+
+  for (const entry of entries) {
+    const fullPath = path.join(dirPath, entry.name);
+    const stats = fs.statSync(fullPath);
+
+    if (entry.isDirectory()) {
+      totalSize += getDirectorySizeSync(fullPath); // recursive
+    } else {
+      totalSize += stats.size;
+    }
+  }
+
+  return totalSize;
+}
 
 const fileManager = {
   read: (req, res, next) => {
@@ -26,9 +44,6 @@ const fileManager = {
 
     let extraParams;
     let lastParam;
-    console.log("params: ", req.params);
-    console.log("len: ", Object.keys(req.params).length);
-    const len = Object.keys(req.params).length;
 
     // get params if any
 
@@ -41,46 +56,42 @@ const fileManager = {
     } else if (req.params && Object.keys(req.params).length < 2) {
       extraParams = Object.values(req.params).filter(Boolean);
     }
-    console.log("extra params: ", extraParams);
-    console.log("root URL: ", req.get("host"));
-    console.log("last param: ", lastParam);
-    console.log(req.isNavigateUp);
 
     // if on a subfolder
     if (req.isNavigateUp) {
-      console.log("navigate is up");
       const currentUrlPath = req.path;
-      console.log("req path: ", req.path);
       req.uploadPath = req.path;
       const parentUrlPath = path.posix.dirname(currentUrlPath);
       req.parentPath = `${req.protocol}://${req.get(
         "host"
       )}${parentUrlPath}/${lastParam}`;
-      console.log("this parentPath: ", req.parentPath);
       req.goUpPath = `${req.protocol}://${req.get("host")}${parentUrlPath}`;
       req.lastParam = lastParam;
       req.parentURLPath = parentUrlPath;
-      console.log("getProtocol: ", req.protocol);
-      console.log("current URL: ", req.currentUrlPath);
-      console.log("goUpPath: ", req.goUpPath);
-      console.log("parent URL Path: ", parentUrlPath);
-      console.log("Full URL: ", req.get("host"), parentUrlPath);
-      console.log(
-        "Full URL + params: ",
-        req.get("host"),
-        parentUrlPath,
-        "/",
-        extraParams
-      );
-      console.log("req.parentPath: ", req.parentPath);
 
       try {
         const items = fs.readdirSync(userPath);
         const directories = [];
         const files = [];
 
+        const trueStat = fs.statSync(userPath);
+        if (trueStat.isDirectory()) {
+          req.where = userPath;
+          const size = Math.round(getDirectorySizeSync(userPath) / 1000); // Divided by 1,000 for kb
+          if (size < 1000) {
+            req.size = size;
+            req.sizeUnit = "kb";
+          } else {
+            req.size = Math.round((size / 1000) * 10) / 10; // Divided by 1,000 for MB
+            req.sizeUnit = "MB";
+          }
+          req.dateCreated = trueStat.birthtime;
+          req.lastModified = trueStat.mtime;
+        }
+
         items.forEach((item) => {
           const itemPath = path.join(userPath, item);
+          console.log("item path: ", itemPath);
           const stat = fs.lstatSync(itemPath);
           if (stat.isDirectory()) {
             directories.push(item);
@@ -102,7 +113,21 @@ const fileManager = {
         const items = fs.readdirSync(userPath);
         const directories = [];
         const files = [];
-        console.log("req.path: ", req.path);
+
+        const trueStat = fs.statSync(userPath);
+        if (trueStat.isDirectory()) {
+          req.where = userPath;
+          const size = Math.round(getDirectorySizeSync(userPath) / 1000); // Divided by 1,000 for kb
+          if (size < 1000) {
+            req.size = size;
+            req.sizeUnit = "kb";
+          } else {
+            req.size = Math.round((size / 1000) * 10) / 10; // Divided by 1,000 for MB
+            req.sizeUnit = "MB";
+          }
+          req.dateCreated = trueStat.birthtime;
+          req.lastModified = trueStat.mtime;
+        }
 
         items.forEach((item) => {
           const itemPath = path.join(userPath, item);
@@ -112,8 +137,6 @@ const fileManager = {
           }
           if (stat.isFile()) files.push(item);
         });
-        console.log("req.path: ", req.path);
-        console.log("req path type: ", typeof req.path.substring(1));
         let pathHelper;
         if (req.path.substring(req.path.length - 1) === "/") {
           pathHelper = req.path.substring(0, req.path.length - 1);
@@ -146,8 +169,6 @@ const fileManager = {
     console.log("undefined?: ", typeof subfolderPath);
     if (typeof subfolderPath !== "undefined") {
       newDirPath = path.join(rootDirPath, subfolderPath, req.body.dirName);
-      console.log("aca");
-      console.log("newDirPath: ", newDirPath);
     }
 
     try {
@@ -168,13 +189,8 @@ const fileManager = {
 
     // If on subfolder...
     if (req.params.oldName.toString().includes("/")) {
-      console.log("hereAqui");
       const oldName = path.join(rootDirPath, req.params.oldName.slice(7)); // to hardcoding remove "/upload"
-      console.log("oldname: ", oldName);
       const fixedName = path.posix.dirname(oldName);
-      console.log("req.path: ", req.path);
-      console.log("req.params.oldName: ", req.params.oldName);
-      const rootPath = path.join(rootDirPath, oldName);
       const newName = path.join(fixedName, dirName);
       fs.rename(oldName, newName, (err) => {
         if (err) throw err;
@@ -220,7 +236,6 @@ const fileManager = {
     const rootDirPath = path.join(BASE_DIR, req.user.user_id.toString());
     let newDirPath = path.join(rootDirPath, req.params.dir);
     const referer = req.get("Referer");
-    console.log("referer: ",referer)
     let subfolderPath;
 
     if (referer) {
@@ -230,7 +245,11 @@ const fileManager = {
       subfolderPath = match && match[1] ? match[1] : "";
     }
     // if not on root
-    if (typeof subfolderPath === "undefined" || subfolderPath !== "" || subfolderPath !== "/") {
+    if (
+      typeof subfolderPath === "undefined" ||
+      subfolderPath !== "" ||
+      subfolderPath !== "/"
+    ) {
       newDirPath = path.join(rootDirPath, req.params.dir.slice(7)); // to hardcoding remove "/upload");
     }
 
@@ -249,7 +268,7 @@ const fileManager = {
     const rootDirPath = path.join(BASE_DIR, req.user.user_id.toString());
     let newDirPath = path.join(rootDirPath, req.params.file);
     const referer = req.get("Referer");
-    console.log("referer: ",referer)
+    console.log("referer: ", referer);
     let subfolderPath;
 
     if (referer) {
@@ -257,12 +276,13 @@ const fileManager = {
       const match = url.pathname.match(/^\/upload(\/.*)?$/);
 
       subfolderPath = match && match[1] ? match[1] : "";
-      console.log("subfolderPath: ", subfolderPath)
-      console.log("subfolderPath type: ", typeof subfolderPath)
     }
     // if not on root
-    if (typeof subfolderPath === "undefined" || subfolderPath !== "" || subfolderPath !== "/") {
-      console.log("aquiiii")
+    if (
+      typeof subfolderPath === "undefined" ||
+      subfolderPath !== "" ||
+      subfolderPath !== "/"
+    ) {
       newDirPath = path.join(rootDirPath, req.params.file.slice(7)); // to hardcoding remove "/upload");
     }
 
@@ -277,6 +297,49 @@ const fileManager = {
       return res.status(500).json({ error: err.message });
     }
     next();
+  },
+  dirDetails: async (req, res, next) => {
+    const rootDirPath = path.join(BASE_DIR, req.user.user_id.toString());
+    let newDirPath = path.join(rootDirPath, req.params.dir);
+    const referer = req.get("Referer");
+    let subfolderPath;
+    let totalSize = 0;
+
+    if (referer) {
+      const url = new URL(referer);
+      const match = url.pathname.match(/^\/upload(\/.*)?$/);
+
+      subfolderPath = match && match[1] ? match[1] : "";
+    }
+    // if not on root
+    if (
+      typeof subfolderPath === "undefined" ||
+      subfolderPath !== "" ||
+      subfolderPath !== "/"
+    ) {
+      newDirPath = path.join(rootDirPath, req.params.dir.slice(7)); // to hardcoding remove "/upload");
+    }
+
+    try {
+      const items = await fsPromise.readdir(newDirPath, {
+        withFileTypes: true,
+      });
+
+      for (const item of items) {
+        const itemPath = path.join(newDirPath, item.name);
+        const stats = await fsPromise.stat(itemPath);
+
+        if (item.isDirectory()) {
+          totalSize += await getDirectorySize(itemPath); // recursive
+        } else {
+          totalSize += stats.size;
+        }
+      }
+      req.totalSize = totalSize; //in bytes
+      next();
+    } catch (err) {
+      return res.status(500).json({ error: err.message });
+    }
   },
 };
 
