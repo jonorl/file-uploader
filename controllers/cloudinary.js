@@ -41,3 +41,5 @@ require("dotenv").config();
 
   console.log(autoCropUrl);
 })();
+
+module.exports = cloudinary;
