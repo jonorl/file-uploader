@@ -28,10 +28,13 @@
   </header>
   <body>
     <% if (user) { %> <% if (user.role === "user") { %>
-    <p><%= fileWhere %></p>
-    <p>File size: <%= fileSize %><%= fileSizeUnit %></p>
-    <p>Date created: <%= fileDateCreated %></p>
-    <p>Date last modified: <%= fileLastModified %></p>
+    <div class="fileStats">
+      <h2>File stats</h2>
+      <p>Location: <%= fileWhere %></p>
+      <p>File size: <%= fileSize %><%= fileSizeUnit %></p>
+      <p>Date created: <%= fileDateCreated %></p>
+      <p>Date last modified: <%= fileLastModified %></p>
+    </div>
     <% }} %>
   </body>
 </html>

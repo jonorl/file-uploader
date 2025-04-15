@@ -168,3 +168,21 @@ margin-right: 5px;
   border-radius: 50%;
   padding-left: -250px;
 }
+
+.dirStats, .fileStats {
+  display: grid;
+  border: aliceblue solid 2px;
+  margin-top: 2vh;
+}
+
+.dirStats>p,.dirStats>h2,.fileStats>p,.fileStats>h2 {
+  justify-self: center;
+}
+
+.dirStats>p, .fileStats>p{
+  font-size: 10px;
+}
+
+.dirStats>h2, .fileStats>h2{
+  font-size: 14px;
+}
