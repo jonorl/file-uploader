@@ -43,7 +43,7 @@ mainRouter.get(
 
 mainRouter.get(
   "/file-delete/:file(*)",
-  fileManager.deleteFile,
+  cloudinaryFileManager.fileDelete,
   mainController.getDel
 );
 
@@ -96,7 +96,7 @@ mainRouter.post(
 
 mainRouter.post(
   "/file-new-name/:oldName(*)/",
-  fileManager.updateFileName,
+  cloudinaryFileManager.fileRename,
   mainController.postDirEdit
 );
 

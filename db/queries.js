@@ -178,6 +178,27 @@ async function getFileName(publicID) {
   return files[0];
 }
 
+async function updateName(publicID, newName) {
+  const result = await prisma.resources.update({
+    where: {
+      public_id: publicID,
+    },
+    data: {
+      original_name: newName,
+    },
+  });
+  return result;
+}
+
+async function delFile(publicID) {
+  const del = await prisma.resources.delete({
+    where: {
+      public_id: publicID,
+    },
+  });
+  return del;
+}
+
 module.exports = {
   serialise,
   deserialise,
@@ -192,4 +213,6 @@ module.exports = {
   insertURL,
   getAllFiles,
   getFileName,
+  updateName,
+  delFile,
 };

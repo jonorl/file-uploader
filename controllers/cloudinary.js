@@ -76,10 +76,24 @@ const cloudinaryFileManager = {
     });
   },
   fileRename: async (req, res, next) => {
+    const publicID = req.params.oldName;
+    const newName = req.body.newName;
+    db.updateName(publicID, newName);
+    console.log("file name updated sucessfully");
+    next();
+  },
+  fileDelete: async (req, res, next) => {
     const publicID = req.params.file;
-    const newName = req.body.newName
-    // Here add a db query that checks WHERE publicID matches and replace it with newName
-  }
+
+    try {
+      await cloudinary.uploader.destroy(publicID);
+      db.delFile(publicID);
+      next();
+    } catch (error) {
+      console.error("Cloudinary delete error:", error);
+      throw error;
+    }
+  },
 };
 
 module.exports = cloudinaryFileManager;
