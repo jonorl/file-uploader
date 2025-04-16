@@ -18,7 +18,7 @@ async function getIndex(req, res) {
     formattedTime: moment(obj.message_created_at).format("h:mm:ssa"),
   }));
   res.render("../views/index", {
-    title: "Members Only",
+    title: "File Uploader project",
     board: modifiedBoard,
     user: req.user,
   });

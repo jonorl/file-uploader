@@ -15,13 +15,20 @@ const cloudinaryFileManager = {
   read: (req, res, next) => {
     next();
   },
-  create: (req, res, next) => {
+  create: async (req, res, next) => {
     // req.file.path comes from Multer (a.k.a "upload" on router)
-    cloudinaryUpload = cloudinary.uploader.upload(req.file.path, {
-      resource_type: "auto",
-    });
+    cloudinaryUpload = await cloudinary.uploader
+      .upload(req.file.path, {
+        resource_type: "auto",
+        overwrite: true,
+      })
+      .then((result) => {
+        req.cloudinaryResponse = result;
+        // take result.bytes, public_id, created_at, url, asset_folder, display_name, original_filename
+        console.log("cloudinaryResponse: ", result);
+        next();
+      });
     req.uploadResult = cloudinaryUpload;
-    next();
   },
 };
 
