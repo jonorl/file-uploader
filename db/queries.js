@@ -2,7 +2,7 @@ const { timeStamp } = require("console");
 const pool = require("./pool");
 
 // Prisma config
-const { PrismaClient } = require('@prisma/client');
+const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
 async function serialise(email) {
@@ -45,7 +45,7 @@ async function insertMessage(email, title, text) {
       title: title,
       text: text,
     },
-  })
+  });
 }
 
 async function insertNewUser(firstName, lastName, email, password) {
@@ -60,7 +60,7 @@ async function insertNewUser(firstName, lastName, email, password) {
       email: email,
       password_hash: password,
     },
-  })
+  });
   return result;
 }
 
@@ -88,7 +88,7 @@ async function updateRole(email, role) {
     data: {
       role: role,
     },
-  })
+  });
   return update;
 }
 
@@ -98,7 +98,7 @@ async function deleteMessage(id) {
     where: {
       message_id: parseInt(id),
     },
-  })
+  });
   return del;
 }
 
@@ -112,11 +112,11 @@ async function incrementVisits(id) {
       user_id: id,
     },
     data: {
-      visits: { 
-        increment: 1 // Use the atomic 'increment' operation
+      visits: {
+        increment: 1, // Use the atomic 'increment' operation
       },
     },
-  })
+  });
 
   return increment;
 }
@@ -133,8 +133,19 @@ async function updateCreatedAt(email) {
     data: {
       updated_at: new Date(),
     },
-  })
+  });
   return result;
+}
+
+async function insertURL(user, url, publicID, resourceType) {
+  await prisma.resources.create({
+    data: {
+      user_id: user,
+      url_address: url,
+      public_id: publicID,
+      resource_type: resourceType,
+    },
+  });
 }
 
 module.exports = {
@@ -148,4 +159,5 @@ module.exports = {
   deleteMessage,
   incrementVisits,
   updateCreatedAt,
+  insertURL,
 };

@@ -201,8 +201,8 @@ async function postProfile(req, res) {
 }
 
 async function postUpload(req, res) {
-  console.log(req.file);
-  console.log(req.uploadResult);
+  console.log("req.cloudinaryListFiles postUpload: ",req.cloudinaryResponse);
+  // HERE LINK THE NEW DB FUNCTION TO ADD THIS TO RESOURCES TABLE
   res.redirect("/upload");
 }
 

@@ -21,7 +21,6 @@ const cloudinaryFileManager = {
 
       req.cloudinaryRootFolderRead = rootFolders;
       req.cloudinaryListFiles = resources;
-      console.log(req.cloudinaryRootFolderRead)
       next();
     } catch (err) {
       next(err);
@@ -29,18 +28,22 @@ const cloudinaryFileManager = {
   },
   create: async (req, res, next) => {
     // req.file.path comes from Multer (a.k.a "upload" on router)
-    cloudinaryUpload = await cloudinary.uploader
-      .upload(req.file.path, {
+    try {
+      // Upload to Cloudinary
+      const result = await cloudinary.uploader.upload(req.file.path, {
         resource_type: "auto",
         overwrite: true,
-      })
-      .then((result) => {
-        req.cloudinaryResponse = result;
-        // take result.bytes, public_id, created_at, url, asset_folder, display_name, original_filename
-        console.log("cloudinaryResponse: ", result);
-        next();
       });
-    req.uploadResult = cloudinaryUpload;
+
+      // Attach the result to the request object
+      req.cloudinaryResponse = result;
+      console.log("cloudinaryResponse: ", result);
+      console.log("cloudinary URL", result.url)
+      next();
+    } catch (err) {
+      console.error("Cloudinary upload error:", err);
+      next(err);
+    }
   },
 };
 

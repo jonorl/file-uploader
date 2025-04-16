@@ -40,10 +40,12 @@ function getDirectorySizeSync(dirPath) {
 
 const fileManager = {
   read: (req, res, next) => {
-    const cloudinaryTransfer = req.cloudinaryRootFolderRead
-    req.cloudinaryRootFolderRead = cloudinaryTransfer 
     const userVal = req.user;
     if (typeof userVal !== "undefined") {
+
+      const cloudinaryTransfer = req.cloudinaryRootFolderRead
+      req.cloudinaryRootFolderRead = cloudinaryTransfer 
+
       const userPath = getPath(req, res);
 
       let extraParams;
@@ -165,6 +167,8 @@ const fileManager = {
   },
 
   create: async (req, res, next) => {
+    // const cloudinaryResponse = req.cloudinaryResponse;
+    // req.cloudinaryListFiles = cloudinaryListFiles
     const rootDirPath = getPath(req, res);
     let newDirPath = path.join(rootDirPath, req.body.dirName);
     const referer = req.get("Referer");
