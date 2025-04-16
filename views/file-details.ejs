@@ -31,10 +31,15 @@
     <div class="fileStats">
       <h2>File stats</h2>
       <p>File name: <%= fileDetails.originalName %></p>
-      <p>Location: <%= fileWhere %></p>
-      <p>File size: <%= fileSize %><%= fileSizeUnit %></p>
-      <p>Date created: <%= fileDateCreated %></p>
-      <p>Date last modified: <%= fileLastModified %></p>
+      <p>
+        Location: <% if (fileDetails.asset_folder === "") { %> root <% } else {
+        %> <%= fileDetails.asset_folder %> <% } %>
+      </p>
+      <p>
+        File size: <%= Math.round(fileDetails.bytes / 1000) %><%= fileSizeUnit
+        %>
+      </p>
+      <p>Date created: <%= fileDetails.created_at %></p>
     </div>
     <% }} %>
   </body>

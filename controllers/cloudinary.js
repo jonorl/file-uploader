@@ -66,7 +66,9 @@ const cloudinaryFileManager = {
     cloudinary.api.resource(publicID, async function (error, result) {
       console.log("result:", result);
       req.fileDetails = result;
-      console.log("req.fileDetails: ", req.fileDetails)
+      if( Math.round(req.fileDetails) > 1048576 ) {
+        req.fileSizeUnit = "MB"
+      } else req.fileSizeUnit = "Kb"
 
       const dbFile = await db.getFileName(req.fileDetails.public_id);
       if(dbFile)
@@ -75,7 +77,7 @@ const cloudinaryFileManager = {
         originalName: dbFile.original_name
       }
       next();
-      console.log("reqdetails updated: ", req.fileDetails)
+
 
       
     });
