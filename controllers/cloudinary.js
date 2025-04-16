@@ -49,11 +49,7 @@ const cloudinaryFileManager = {
         resource_type: "auto",
         overwrite: true,
       });
-
-      // Attach the result to the request object
       req.cloudinaryResponse = result;
-      console.log("cloudinaryResponse: ", result);
-      console.log("cloudinary URL", result.url);
       next();
     } catch (err) {
       console.error("Cloudinary upload error:", err);
@@ -66,26 +62,24 @@ const cloudinaryFileManager = {
     cloudinary.api.resource(publicID, async function (error, result) {
       console.log("result:", result);
       req.fileDetails = result;
-      if( Math.round(req.fileDetails) > 1048576 ) {
-        req.fileSizeUnit = "MB"
-      } else req.fileSizeUnit = "Kb"
+      if (Math.round(req.fileDetails) > 1048576) {
+        req.fileSizeUnit = "MB";
+      } else req.fileSizeUnit = "Kb";
 
       const dbFile = await db.getFileName(req.fileDetails.public_id);
-      if(dbFile)
-      req.fileDetails = {
-        ...req.fileDetails,
-        originalName: dbFile.original_name
-      }
+      if (dbFile)
+        req.fileDetails = {
+          ...req.fileDetails,
+          originalName: dbFile.original_name,
+        };
       next();
-
-
-      
     });
-    // add the missing original name INDEX/MATCHING from resources using public_id
-
-
-
   },
+  fileRename: async (req, res, next) => {
+    const publicID = req.params.file;
+    const newName = req.body.newName
+    // Here add a db query that checks WHERE publicID matches and replace it with newName
+  }
 };
 
 module.exports = cloudinaryFileManager;
