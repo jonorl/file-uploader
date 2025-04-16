@@ -41,11 +41,11 @@
 
     <% cloudinaryRootFolderRead.folders.forEach(folder => { %>
     <div class="dir-container">
-      <a class="navigate" href="TBC"><%= folder.name %></a>
-      <a class="edit" href="TBC">
+      <a class="navigate" href="/upload/<%= folder.path %>"><%= folder.name %></a>
+      <a class="edit" href="/updateFolderName/<%= folder.external_id %>">
         <i id="<%= folder.name %>" class="fas fa-edit"></i>
       </a>
-      <a class="delete" href="TBC">
+      <a class="delete" href="/updateFolderName/<%= folder.external_id %>">
         <i id="<%= folder.name %>" class="fas fa-trash-alt"></i>
       </a>
     </div>

@@ -15,27 +15,28 @@ const db = require("../db/queries");
 const cloudinaryFileManager = {
   read: async (req, res, next) => {
     try {
+      let subfolderPath = ""
+      if (req.params.subfolder) {
+        console.log(req.params.subfolder)
+        subfolderPath = req.params.subfolder
+      }
       const [rootFolders, resources] = await Promise.all([
         cloudinary.api.root_folders(),
-        cloudinary.api.resources({ max_results: 100 }),
+        cloudinary.api.resources({ type: 'upload', max_results: 100, prefix: `${subfolderPath ? subfolderPath + '/' : ''}` }),
       ]);
-      console.log("resources: ", resources.resources);
+
       // add the missing original name INDEX/MATCHING from resources using public_id
       for (const file of resources.resources) {
         const dbFile = await db.getFileName(file.public_id);
         if (dbFile) {
-          // Only proceed if dbFile exists
-          console.log("dbFile original_name: ", dbFile.original_name);
           file.original_name = dbFile.original_name;
         } else {
-          file.original_name = null; // Or set a default value
+          file.original_name = null;
         }
-
-        // file.original_name = dbFile?.original_name;
       }
       req.cloudinaryRootFolderRead = rootFolders;
       req.cloudinaryListFiles = resources;
-      console.log("resources: ", resources);
+      console.log("root folder: ", rootFolders.folders);
       next();
     } catch (err) {
       next(err);

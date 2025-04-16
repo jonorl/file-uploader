@@ -56,7 +56,6 @@ mainRouter.get(
     next();
   },
   cloudinaryFileManager.read,
-  fileManager.read,
   mainController.getUpload
 );
 
