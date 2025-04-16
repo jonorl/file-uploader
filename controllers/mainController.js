@@ -58,7 +58,10 @@ async function getDelete(req, res) {
 }
 
 async function getUpload(req, res) {
-  console.log("In getUpload - cloudinaryRootFolderRead:", req.cloudinaryRootFolderRead);
+  console.log(
+    "In getUpload - cloudinaryRootFolderRead:",
+    req.cloudinaryRootFolderRead
+  );
   res.render("../views/upload", {
     user: req.user,
     directories: req.directories,
@@ -109,7 +112,7 @@ async function getFileDetails(req, res) {
     fileDateCreated: req.fileDateCreated,
     fileLastModified: req.fileLastModified,
     fileWhere: req.fileWhere,
-  })
+  });
 }
 
 async function postSignUp(req, res, next) {
@@ -201,19 +204,26 @@ async function postProfile(req, res) {
 }
 
 async function postUpload(req, res) {
-  console.log("req.cloudinaryListFiles postUpload: ",req.cloudinaryResponse);
-  // HERE LINK THE NEW DB FUNCTION TO ADD THIS TO RESOURCES TABLE
+  db.insertURL(
+    req.user.user_id,
+    req.cloudinaryResponse.url,
+    req.cloudinaryResponse.public_id,
+    req.cloudinaryResponse.resource_type,
+    req.cloudinaryResponse.original_filename,
+    req.cloudinaryResponse
+  );
+  console.log("file added to db successfully");
   res.redirect("/upload");
 }
 
 async function postNewDir(req, res) {
-    const redirectTo = req.body.redirectTo || "/";
-    res.redirect(redirectTo);
+  const redirectTo = req.body.redirectTo || "/";
+  res.redirect(redirectTo);
 }
 
 async function postDirEdit(req, res) {
-    const redirectTo = req.body.redirectTo || "/";
-    res.redirect(redirectTo);
+  const redirectTo = req.body.redirectTo || "/";
+  res.redirect(redirectTo);
 }
 
 async function postNewName(req, res) {

@@ -137,13 +137,15 @@ async function updateCreatedAt(email) {
   return result;
 }
 
-async function insertURL(user, url, publicID, resourceType) {
+async function insertURL(user, url, publicID, resourceType, originalName, metadata) {
   await prisma.resources.create({
     data: {
       user_id: user,
       url_address: url,
       public_id: publicID,
       resource_type: resourceType,
+      original_name: originalName,
+      metadata: metadata
     },
   });
 }
