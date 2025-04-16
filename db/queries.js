@@ -137,7 +137,7 @@ async function updateCreatedAt(email) {
   return result;
 }
 
-async function insertURL(user, url, publicID, resourceType, originalName, metadata) {
+async function insertURL(user, url, publicID, resourceType, originalName, folder, metadata) {
   await prisma.resources.create({
     data: {
       user_id: user,
@@ -145,9 +145,18 @@ async function insertURL(user, url, publicID, resourceType, originalName, metada
       public_id: publicID,
       resource_type: resourceType,
       original_name: originalName,
+      asset_folder: folder,
       metadata: metadata
     },
   });
+
+  async function getAllFiles(id) {
+    const rows = await prisma.resources.findUnique({
+      where: {
+        user_id: id,
+      }})
+    return rows;
+  }
 }
 
 module.exports = {

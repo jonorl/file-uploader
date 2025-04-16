@@ -49,6 +49,7 @@ model resources {
   user_id       Int
   url_address   String
   original_name String
+  asset_folder  String?
   public_id     String    @unique @db.VarChar(255)
   resource_type String    @default("image") @db.VarChar(50)
   created_at    DateTime? @default(now()) @db.Timestamp(6)

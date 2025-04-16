@@ -58,10 +58,7 @@ async function getDelete(req, res) {
 }
 
 async function getUpload(req, res) {
-  console.log(
-    "In getUpload - cloudinaryRootFolderRead:",
-    req.cloudinaryRootFolderRead
-  );
+  console.log(req.cloudinaryListFiles)
   res.render("../views/upload", {
     user: req.user,
     directories: req.directories,
@@ -210,6 +207,7 @@ async function postUpload(req, res) {
     req.cloudinaryResponse.public_id,
     req.cloudinaryResponse.resource_type,
     req.cloudinaryResponse.original_filename,
+    req.cloudinaryResponse.asset_folder,
     req.cloudinaryResponse
   );
   console.log("file added to db successfully");
