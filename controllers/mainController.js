@@ -91,6 +91,7 @@ async function getDel(req, res) {
 async function getFileDetails(req, res) {
   res.render("../views/file-details", {
     user: req.user,
+    fileDetails: req.fileDetails,
     fileSize: req.fileSize,
     fileSizeUnit: req.fileSizeUnit,
     fileDateCreated: req.fileDateCreated,

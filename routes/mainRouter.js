@@ -62,7 +62,7 @@ mainRouter.get(
 
 mainRouter.get(
   "/file-details/:file(*)",
-  fileManager.fileDetails,
+  cloudinaryFileManager.fileDetails,
   mainController.getFileDetails
 );
 
