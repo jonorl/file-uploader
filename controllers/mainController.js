@@ -59,23 +59,10 @@ async function getDelete(req, res) {
 
 async function getUpload(req, res) {
   console.log(req.cloudinaryListFiles)
+  // db.getFileName()
   res.render("../views/upload", {
     user: req.user,
-    directories: req.directories,
-    files: req.files,
-    parentPath: req.parentPath,
-    parentPathTrimmed: req.parentPathTrimmed,
-    goUpPath: req.goUpPath,
-    lastParam: req.lastParam,
     showGoUp: req.showGoUp,
-    parentUrlPath: req.parentURLPath,
-    uploadPath: req.uploadPath,
-    size: req.size,
-    dateCreated: req.dateCreated,
-    lastModified: req.lastModified,
-    where: req.where,
-    sizeUnit: req.sizeUnit,
-    // Cloudinary
     cloudinaryRootFolderRead: req.cloudinaryRootFolderRead,
     cloudinaryListFiles: req.cloudinaryListFiles,
   });

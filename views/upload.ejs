@@ -10,62 +10,10 @@
     <link rel="stylesheet" href="/styles.css" />
     <title>Upload</title>
   </head>
-  <header>
-    <a href="/">Home</a>
-
-    <% if (user) { %>
-    <a href="/upload">Upload</a>
-    <a href="/new-message">Leave a message</a>
-    <a href="/profile">Profile</a>
-    <a href="/logout">Logout</a>
-    <% } else { %>
-    <a href="/login">Login</a>
-    <a href="/sign-up">Sign Up</a>
-    <% } %>
-  </header>
   <body>
-    <% if (user) { %>
-    <h1>Directories (local)</h1>
-
-    <% if (showGoUp) { %>
-    <a class="goUp" href="<%= goUpPath %>">Go Up</a>
-    <% } %>
-
-    <div class="dirStats">
-      <h2>Stats:</h2>
-      <p>Where: <%= where %></p>
-      <p>Size: <%= size %> <%= sizeUnit %></p>
-      <p>Created on: <%= dateCreated %></p>
-      <p>Lat modified: <%= lastModified %></p>
-    </div>
-
-    <div class="addDir">
-      <form action="/newDir" method="POST">
-        <label for="newDir">New folder</label>
-        <input type="text" name="dirName" />
-        <input type="hidden" name="subfolder" value="<%= goUpPath %>" />
-        <% if (typeof errors !== 'undefined' && errors.length > 0) { %>
-        <ul class="errors">
-          <% errors.forEach(error => { %>
-          <li><%= error.msg %></li>
-          <% }); %>
-        </ul>
-        <% } %>
-        <button class="addNewFolder" type="submit">+</button>
-      </form>
-    </div>
-
-    <% directories.directories.forEach(dir => { %>
-    <div class="dir-container">
-      <a class="navigate" href="<%= parentPath %>/<%= dir %>"><%= dir %></a>
-      <a class="edit" href="/dir-new-name<%= uploadPath %>/<%= dir %>">
-        <i id="<%= dir %>" class="fas fa-edit"></i>
-      </a>
-      <a class="delete" href="/dir-delete/<%= uploadPath %>/<%= dir %>">
-        <i id="<%= dir %>" class="fas fa-trash-alt"></i>
-      </a>
-    </div>
-    <% }) %>
+    <header>
+      <a href="/">Home</a>
+    </header>
 
     <!-- Cloudinary Directories -->
     <% if (user) { %>
@@ -74,14 +22,6 @@
     <% if (showGoUp) { %>
     <a class="goUp" href="TBC">Go Up</a>
     <% } %>
-
-    <div class="dirStats">
-      <h2>Stats:</h2>
-      <p>Where: "TBC"</p>
-      <p>Size: "TBC"</p>
-      <p>Created on: "TBC"</p>
-      <p>Lat modified: "TBC"</p>
-    </div>
 
     <div class="addDir">
       <form action="/newDir" method="POST">
@@ -109,68 +49,25 @@
         <i id="<%= folder.name %>" class="fas fa-trash-alt"></i>
       </a>
     </div>
-    <% }) %> <% } %>
-
-    <h1>Files (local)</h1>
-
-    <% files.files.forEach(file => { %>
-    <div class="file-container">
-      <% if (showGoUp) { %>
-      <a
-        class="download"
-        href="<%= parentUrlPath %>s/<%= user.user_id %><%= parentPathTrimmed %>/<%= file %>"
-        ><%= file %></a
-      >
-      <% } else { %>
-      <a class="download" href="uploads/<%= user.user_id %>/<%= file %>"
-        ><%= file %></a
-      >
-      <% } %>
-
-      <a class="details" href="/file-details<%= uploadPath %>/<%= file %>">
-        <i id="<%= file %>" class="fas fa-eye"></i>
-      </a>
-      <a class="edit" href="/file-new-name<%= uploadPath %>/<%= file %>">
-        <i id="<%= file %>" class="fas fa-edit"></i>
-      </a>
-      <a class="delete" href="/file-delete<%= uploadPath %>/<%= file %>">
-        <i id="<%= file %>" class="fas fa-trash-alt"></i>
-      </a>
-    </div>
-    <% }) %> <% if (user) { %>
-    <div class="addFile">
-      <form action="/upload" method="POST" enctype="multipart/form-data">
-        <label for="upload">Upload file</label>
-        <input type="file" name="avatar" />
-        <% if (typeof errors !== 'undefined' && errors.length > 0) { %>
-        <ul class="errors">
-          <% errors.forEach(error => { %>
-          <li><%= error.msg %></li>
-          <% }); %>
-        </ul>
-        <% } %>
-        <button class="addNewFile" type="submit">+</button>
-      </form>
-    </div>
-    <% } %>
+    <% }); %>
 
     <!-- Cloudinary Files -->
     <h1>Files (cloudinary)</h1>
 
     <% cloudinaryListFiles.resources.forEach(file => { %>
     <div class="file-container">
-      <a class="download" href="<%= file.url %>"><%= file.display_name %></a>
-      <a class="details" href="/file-details/<%= file.asset_id %>">
+      <a class="download" href="<%= file.url %>"><%= file.original_name %></a>
+      <a class="details" href="/file-details/<%= file.public_id %>">
         <i id="<%= file.asset_id %>" class="fas fa-eye"></i>
       </a>
-      <a class="edit" href="/file-new-name/<%= file.asset_id %>">
+      <a class="edit" href="/file-new-name/<%= file.public_id %>">
         <i id="<%= file.asset_id %>" class="fas fa-edit"></i>
       </a>
-      <a class="delete" href="/file-delete/<%= file.asset_id %>">
+      <a class="delete" href="/file-delete/<%= file.public_id %>">
         <i id="<%= file.asset_id %>" class="fas fa-trash-alt"></i>
       </a>
     </div>
-    <% }) %> <% if (user) { %>
+    <% }); %> <% if (user) { %>
     <div class="addFile">
       <form action="/upload" method="POST" enctype="multipart/form-data">
         <label for="upload">Upload file</label>
@@ -185,6 +82,8 @@
         <button class="addNewFile" type="submit">+</button>
       </form>
     </div>
-    <% } %> <% } else {%> Please login first<% }%>
+    <% } %> <% } else { %>
+    <p>Please login first</p>
+    <% } %>
   </body>
 </html>

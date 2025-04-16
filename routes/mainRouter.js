@@ -26,7 +26,7 @@ mainRouter.get("/profile", mainController.getProfile);
 
 mainRouter.get("/delete/:messageId(*)", mainController.getDelete);
 
-mainRouter.get("/upload", checkDir, cloudinaryFileManager.read, fileManager.read, mainController.getUpload);
+mainRouter.get("/upload", checkDir, cloudinaryFileManager.read, mainController.getUpload);
 
 mainRouter.get(
   "/dir-new-name/:dir(*)",
@@ -50,12 +50,12 @@ mainRouter.get(
 mainRouter.get(
   "/upload/:subfolder(*)?",
   (req, res, next) => {
-    console.log(req.params);
     if (req.params) {
       req.isNavigateUp = true;
     }
     next();
   },
+  cloudinaryFileManager.read,
   fileManager.read,
   mainController.getUpload
 );
