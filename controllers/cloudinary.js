@@ -13,22 +13,19 @@ require("dotenv").config();
 
 const cloudinaryFileManager = {
   read: async (req, res, next) => {
-    cloudinaryRootFolderRead = await cloudinary.api
-      .root_folders()
-      .then((cloudinaryRootFolderRead) => {
-        req.cloudinaryRootFolderRead = cloudinaryRootFolderRead;
-        console.log(
-          "cloudinaryRootFolderRead: ",
-          cloudinaryRootFolderRead.folders
-        );
-      });
-    cloudinaryListFiles = await cloudinary.api
-      .resources({ max_results: 100 })
-      .then((cloudinaryListFiles) => {
-        req.cloudinaryListFiles = cloudinaryListFiles;
-        console.log("cloudinaryListFiles: ", cloudinaryListFiles);
-      });
-    next();
+    try {
+      const [rootFolders, resources] = await Promise.all([
+        cloudinary.api.root_folders(),
+        cloudinary.api.resources({ max_results: 100 }),
+      ]);
+
+      req.cloudinaryRootFolderRead = rootFolders;
+      req.cloudinaryListFiles = resources;
+      console.log(req.cloudinaryRootFolderRead)
+      next();
+    } catch (err) {
+      next(err);
+    }
   },
   create: async (req, res, next) => {
     // req.file.path comes from Multer (a.k.a "upload" on router)

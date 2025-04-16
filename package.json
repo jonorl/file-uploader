@@ -25,7 +25,7 @@
   "description": "File uploader for The Odin Project",
   "main": "app.js",
   "devDependencies": {
-    "prisma": "^6.5.0"
+    "prisma": "^6.6.0"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

@@ -58,12 +58,13 @@ async function getDelete(req, res) {
 }
 
 async function getUpload(req, res) {
+  console.log("In getUpload - cloudinaryRootFolderRead:", req.cloudinaryRootFolderRead);
   res.render("../views/upload", {
     user: req.user,
     directories: req.directories,
     files: req.files,
     parentPath: req.parentPath,
-    parentPathTrimmed: req.parentPath.substring(28),
+    parentPathTrimmed: req.parentPathTrimmed,
     goUpPath: req.goUpPath,
     lastParam: req.lastParam,
     showGoUp: req.showGoUp,

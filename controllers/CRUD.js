@@ -40,119 +40,128 @@ function getDirectorySizeSync(dirPath) {
 
 const fileManager = {
   read: (req, res, next) => {
-    const userPath = getPath(req, res);
+    const cloudinaryTransfer = req.cloudinaryRootFolderRead
+    req.cloudinaryRootFolderRead = cloudinaryTransfer 
+    const userVal = req.user;
+    if (typeof userVal !== "undefined") {
+      const userPath = getPath(req, res);
 
-    let extraParams;
-    let lastParam;
+      let extraParams;
+      let lastParam;
 
-    // get params if any
+      // get params if any
 
-    if (req.params && Object.keys(req.params).length >= 2) {
-      extraParams = Object.values(req.params).filter(Boolean).shift();
-      lastParam =
-        Object.values(req.params.subfolder).join("").split("/").pop() ||
-        req.params.subfolder;
-      // this is to avoid the annoying {0} object that duplicates the first param.
-    } else if (req.params && Object.keys(req.params).length < 2) {
-      extraParams = Object.values(req.params).filter(Boolean);
-    }
-
-    // if on a subfolder
-    if (req.isNavigateUp) {
-      const currentUrlPath = req.path;
-      req.uploadPath = req.path;
-      const parentUrlPath = path.posix.dirname(currentUrlPath);
-      req.parentPath = `${req.protocol}://${req.get(
-        "host"
-      )}${parentUrlPath}/${lastParam}`;
-      req.goUpPath = `${req.protocol}://${req.get("host")}${parentUrlPath}`;
-      req.lastParam = lastParam;
-      req.parentURLPath = parentUrlPath;
-
-      try {
-        const items = fs.readdirSync(userPath);
-        const directories = [];
-        const files = [];
-
-        const trueStat = fs.statSync(userPath);
-        if (trueStat.isDirectory()) {
-          req.where = userPath;
-          const size = Math.round(getDirectorySizeSync(userPath) / 1000); // Divided by 1,000 for kb
-          if (size < 1000) {
-            req.size = size;
-            req.sizeUnit = "kb";
-          } else {
-            req.size = Math.round((size / 1000) * 10) / 10; // Divided by 1,000 for MB
-            req.sizeUnit = "MB";
-          }
-          req.dateCreated = trueStat.birthtime;
-          req.lastModified = trueStat.mtime;
-        }
-
-        items.forEach((item) => {
-          const itemPath = path.join(userPath, item);
-          console.log("item path: ", itemPath);
-          const stat = fs.lstatSync(itemPath);
-          req.fileSize = stat.size;
-          req.fileDateCreated = stat.birthtime;
-          req.fileLastModified = stat.mtime;
-          if (stat.isDirectory()) {
-            directories.push(item);
-          }
-          if (stat.isFile()) files.push(item);
-        });
-        req.showGoUp = true;
-        req.directories = { type: "directory", directories: directories };
-        req.files = { type: "file", files: files };
-
-        next();
-      } catch (err) {
-        res.status(500).json({ error: err.message });
+      if (req.params && Object.keys(req.params).length >= 2) {
+        extraParams = Object.values(req.params).filter(Boolean).shift();
+        lastParam =
+          Object.values(req.params.subfolder).join("").split("/").pop() ||
+          req.params.subfolder;
+        // this is to avoid the annoying {0} object that duplicates the first param.
+      } else if (req.params && Object.keys(req.params).length < 2) {
+        extraParams = Object.values(req.params).filter(Boolean);
       }
-    }
-    // If on root
-    else
-      try {
-        const items = fs.readdirSync(userPath);
-        const directories = [];
-        const files = [];
 
-        const trueStat = fs.statSync(userPath);
-        if (trueStat.isDirectory()) {
-          req.where = userPath;
-          const size = Math.round(getDirectorySizeSync(userPath) / 1000); // Divided by 1,000 for kb
-          if (size < 1000) {
-            req.size = size;
-            req.sizeUnit = "kb";
-          } else {
-            req.size = Math.round((size / 1000) * 10) / 10; // Divided by 1,000 for MB
-            req.sizeUnit = "MB";
+      // if on a subfolder
+      if (req.isNavigateUp) {
+        const currentUrlPath = req.path;
+        req.uploadPath = req.path;
+        const parentUrlPath = path.posix.dirname(currentUrlPath);
+        req.parentPath = `${req.protocol}://${req.get(
+          "host"
+        )}${parentUrlPath}/${lastParam}`;
+        req.parentPathTrimmed = req.parentPath.substring(28);
+        req.goUpPath = `${req.protocol}://${req.get("host")}${parentUrlPath}`;
+        req.lastParam = lastParam;
+        req.parentURLPath = parentUrlPath;
+
+        try {
+          const items = fs.readdirSync(userPath);
+          const directories = [];
+          const files = [];
+
+          const trueStat = fs.statSync(userPath);
+          if (trueStat.isDirectory()) {
+            req.where = userPath;
+            const size = Math.round(getDirectorySizeSync(userPath) / 1000); // Divided by 1,000 for kb
+            if (size < 1000) {
+              req.size = size;
+              req.sizeUnit = "kb";
+            } else {
+              req.size = Math.round((size / 1000) * 10) / 10; // Divided by 1,000 for MB
+              req.sizeUnit = "MB";
+            }
+            req.dateCreated = trueStat.birthtime;
+            req.lastModified = trueStat.mtime;
           }
-          req.dateCreated = trueStat.birthtime;
-          req.lastModified = trueStat.mtime;
+
+          items.forEach((item) => {
+            const itemPath = path.join(userPath, item);
+            console.log("item path: ", itemPath);
+            const stat = fs.lstatSync(itemPath);
+            req.fileSize = stat.size;
+            req.fileDateCreated = stat.birthtime;
+            req.fileLastModified = stat.mtime;
+            if (stat.isDirectory()) {
+              directories.push(item);
+            }
+            if (stat.isFile()) files.push(item);
+          });
+          req.showGoUp = true;
+          req.directories = { type: "directory", directories: directories };
+          req.files = { type: "file", files: files };
+
+          next();
+        } catch (err) {
+          res.status(500).json({ error: err.message });
         }
-
-        items.forEach((item) => {
-          const itemPath = path.join(userPath, item);
-          const stat = fs.lstatSync(itemPath);
-          if (stat.isDirectory()) {
-            directories.push(item);
-          }
-          if (stat.isFile()) files.push(item);
-        });
-        let pathHelper;
-        if (req.path.substring(req.path.length - 1) === "/") {
-          pathHelper = req.path.substring(0, req.path.length - 1);
-        } else pathHelper = req.path;
-        console.log("path helper: ", pathHelper);
-        req.parentPath = `${req.protocol}://${req.get("host")}${pathHelper}`;
-        req.directories = { type: "directory", directories: directories };
-        req.files = { type: "file", files: files };
-
-        next();
-      } catch (err) {
-        res.status(500).json({ error: err.message });
       }
+      // If on root
+      else
+        try {
+          const items = fs.readdirSync(userPath);
+          const directories = [];
+          const files = [];
+
+          const trueStat = fs.statSync(userPath);
+          if (trueStat.isDirectory()) {
+            req.where = userPath;
+            const size = Math.round(getDirectorySizeSync(userPath) / 1000); // Divided by 1,000 for kb
+            if (size < 1000) {
+              req.size = size;
+              req.sizeUnit = "kb";
+            } else {
+              req.size = Math.round((size / 1000) * 10) / 10; // Divided by 1,000 for MB
+              req.sizeUnit = "MB";
+            }
+            req.dateCreated = trueStat.birthtime;
+            req.lastModified = trueStat.mtime;
+          }
+
+          items.forEach((item) => {
+            const itemPath = path.join(userPath, item);
+            const stat = fs.lstatSync(itemPath);
+            if (stat.isDirectory()) {
+              directories.push(item);
+            }
+            if (stat.isFile()) files.push(item);
+          });
+          let pathHelper;
+          if (req.path.substring(req.path.length - 1) === "/") {
+            pathHelper = req.path.substring(0, req.path.length - 1);
+          } else pathHelper = req.path;
+          console.log("path helper: ", pathHelper);
+          req.parentPath = `${req.protocol}://${req.get("host")}${pathHelper}`;
+          req.parentPathTrimmed = req.parentPath.substring(28);
+          req.directories = { type: "directory", directories: directories };
+          console.log("directories: ", directories);
+          req.files = { type: "file", files: files };
+
+          next();
+        } catch (err) {
+          res.status(500).json({ error: err.message });
+        }
+    }
+    next();
   },
 
   create: async (req, res, next) => {
@@ -175,7 +184,6 @@ const fileManager = {
     }
 
     try {
-
       if (fs.existsSync(newDirPath)) {
         return res.status(409).json({ error: "Directory already exists." });
       }
@@ -284,8 +292,7 @@ const fileManager = {
     // if not on root
     if (
       typeof subfolderPath === "undefined" ||
-      subfolderPath !== "" &&
-      subfolderPath !== "/"
+      (subfolderPath !== "" && subfolderPath !== "/")
     ) {
       newDirPath = path.join(rootDirPath, req.params.file.slice(7)); // to hardcoding remove "/upload");
     }
@@ -318,15 +325,17 @@ const fileManager = {
       console.log("subfolderPathFile: ", subfolderPath);
     }
     // if not on root
-    console.log("IF STATMENT: ", typeof subfolderPath === "undefined" &&
-      subfolderPath !== "" &&
-      subfolderPath !== "/")
+    console.log(
+      "IF STATMENT: ",
+      typeof subfolderPath === "undefined" &&
+        subfolderPath !== "" &&
+        subfolderPath !== "/"
+    );
     if (
       typeof subfolderPath === "undefined" ||
-      subfolderPath !== "" &&
-      subfolderPath !== "/"
+      (subfolderPath !== "" && subfolderPath !== "/")
     ) {
-      console.log("hereeeee")
+      console.log("hereeeee");
       newDirPath = path.join(rootDirPath, req.params.file.slice(7)); // to hardcoding remove "/upload");
       console.log("newDirPath: ", newDirPath);
     }
