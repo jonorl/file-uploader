@@ -12,7 +12,22 @@ require("dotenv").config();
 })();
 
 const cloudinaryFileManager = {
-  read: (req, res, next) => {
+  read: async (req, res, next) => {
+    cloudinaryRootFolderRead = await cloudinary.api
+      .root_folders()
+      .then((cloudinaryRootFolderRead) => {
+        req.cloudinaryRootFolderRead = cloudinaryRootFolderRead;
+        console.log(
+          "cloudinaryRootFolderRead: ",
+          cloudinaryRootFolderRead.folders
+        );
+      });
+    cloudinaryListFiles = await cloudinary.api
+      .resources({ max_results: 100 })
+      .then((cloudinaryListFiles) => {
+        req.cloudinaryListFiles = cloudinaryListFiles;
+        console.log("cloudinaryListFiles: ", cloudinaryListFiles);
+      });
     next();
   },
   create: async (req, res, next) => {

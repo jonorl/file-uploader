@@ -58,7 +58,6 @@ async function getDelete(req, res) {
 }
 
 async function getUpload(req, res) {
-  console.log(req.params.subfolder)
   res.render("../views/upload", {
     user: req.user,
     directories: req.directories,
@@ -75,6 +74,9 @@ async function getUpload(req, res) {
     lastModified: req.lastModified,
     where: req.where,
     sizeUnit: req.sizeUnit,
+    // Cloudinary
+    cloudinaryRootFolderRead: req.cloudinaryRootFolderRead,
+    cloudinaryListFiles: req.cloudinaryListFiles,
   });
 }
 

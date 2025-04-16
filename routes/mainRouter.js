@@ -26,17 +26,10 @@ mainRouter.get("/profile", mainController.getProfile);
 
 mainRouter.get("/delete/:messageId(*)", mainController.getDelete);
 
-mainRouter.get("/upload", checkDir, fileManager.read, mainController.getUpload);
+mainRouter.get("/upload", checkDir, cloudinaryFileManager.read, fileManager.read, mainController.getUpload);
 
 mainRouter.get(
   "/dir-new-name/:dir(*)",
-  // (req, res, next) => {
-  //   let pathHelper;
-  //   if (req.path.substring(req.path.length - 1) === "/") {
-  //     pathHelper = req.path.substring(0, req.path.length - 1);
-  //   } else pathHelper = req.path;
-  //   next();
-  // },
   mainController.getDirEdit
 );
 
