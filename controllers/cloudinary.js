@@ -40,7 +40,10 @@ const cloudinaryFileManager = {
         rootFolders = await cloudinary.api.sub_folders(subfolderPath);
         // If on root
       } else {
-        rootFolders = await cloudinary.api.root_folders();
+        rootFolders = await cloudinary.api.root_folders({
+          max_results: 100
+        });
+        // rootFolders = await cloudinary.api.sub_folders("");
         resources = await cloudinary.api.resources({
           max_results: 100,
           type: "upload",
@@ -52,12 +55,10 @@ const cloudinaryFileManager = {
           (file) =>
             file.context?.custom?.user_id === req.user.user_id.toString()
         );
-        console.log("result PLEASEWORK2:", resources);
 
         resources.resources = resources.resources.filter(
           (res) => res.asset_folder === ""
         );
-        console.log("result PLEASEWORK3:", resources);
       }
 
       // add the missing original name INDEX/MATCHING from resources using public_id
@@ -90,8 +91,6 @@ const cloudinaryFileManager = {
       }
 
       // Upload to Cloudinary
-
-      console.log("subfolderPath: ", subfolderPath);
 
       // if on subfolder
       if (isSubFolder) {
@@ -167,7 +166,6 @@ const cloudinaryFileManager = {
     }
   },
   folderDelete: async (req, res, next) => {
-    console.log("req.params.dir: ", req.params.dir);
     const subfolder = req.params.dir;
     try {
       await cloudinary.api.delete_folder(subfolder);
@@ -175,6 +173,25 @@ const cloudinaryFileManager = {
     } catch (error) {
       console.error("Cloudinary delete error:", error);
       throw error;
+    }
+  },
+  folderCreate: async (req, res, next) => {
+    try {
+      const subfolderName = req.body.newDir;
+      const filePath = path.resolve(__dirname, "placeholder.png");
+      let fullPath = subfolderName;
+
+      // If in a subfolder, prepend the existing path
+      if (req.params.subfolder) {
+        fullPath = `${req.params.subfolder}/${subfolderName}`;
+      }
+
+      await cloudinary.api.create_folder(fullPath);
+
+      next();
+    } catch (err) {
+      console.error("Cloudinary upload error:", err);
+      next(err);
     }
   },
 };
