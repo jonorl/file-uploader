@@ -14,16 +14,35 @@ const db = require("../db/queries");
 
 const cloudinaryFileManager = {
   read: async (req, res, next) => {
+    let isSubFolder = false;
     try {
-      let subfolderPath = ""
-      if (req.params.subfolder) {
-        console.log(req.params.subfolder)
-        subfolderPath = req.params.subfolder
+      let subfolderPath = "";
+      if (typeof req.params.subfolder !== "undefined") {
+        subfolderPath = req.params.subfolder;
+        isSubFolder = true;
       }
-      const [rootFolders, resources] = await Promise.all([
-        cloudinary.api.root_folders(),
-        cloudinary.api.resources({ type: 'upload', max_results: 100, prefix: `${subfolderPath ? subfolderPath + '/' : ''}` }),
-      ]);
+      let resources;
+      let rootFolders;
+
+      // If on subfolder
+      if (isSubFolder) {
+        await cloudinary.api.resources_by_asset_folder(
+          subfolderPath,
+          { max_results: 100 },
+          function (error, result) {
+            resources = result;
+          }
+        );
+        rootFolders = await cloudinary.api.sub_folders(subfolderPath);
+        // If on root
+      } else {
+        rootFolders = await cloudinary.api.root_folders();
+        resources = await cloudinary.api.resources({ max_results: 100, type: 'upload', });
+        resources.resources = resources.resources.filter(
+          (res) => res.asset_folder === ''
+        );
+        console.log("resources: ",resources.resources)
+      }
 
       // add the missing original name INDEX/MATCHING from resources using public_id
       for (const file of resources.resources) {
