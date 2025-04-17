@@ -168,9 +168,10 @@ async function getAllFiles(id) {
   return files;
 }
 
-async function getFileName(publicID) {
+async function getFileName(publicID, userID) {
   const files = await prisma.resources.findMany({
     where: {
+      user_id: userID,
       public_id: publicID,
     },
   });

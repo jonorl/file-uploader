@@ -27,13 +27,16 @@ const cloudinaryFileManager = {
 
       // If on subfolder
       if (isSubFolder) {
-        await cloudinary.api.resources_by_asset_folder(
+        resources = await cloudinary.api.resources_by_asset_folder(
           subfolderPath,
-          { max_results: 100 },
-          function (error, result) {
-            resources = result;
-          }
+          { max_results: 100, context: true }
         );
+
+        resources.resources = resources.resources.filter(
+          (file) =>
+            file.context?.custom?.user_id === req.user.user_id.toString()
+        );
+
         rootFolders = await cloudinary.api.sub_folders(subfolderPath);
         // If on root
       } else {
@@ -41,15 +44,26 @@ const cloudinaryFileManager = {
         resources = await cloudinary.api.resources({
           max_results: 100,
           type: "upload",
+          context: true,
+          with_field: "context",
         });
+
+        resources.resources = resources.resources.filter(
+          (file) =>
+            file.context?.custom?.user_id === req.user.user_id.toString()
+        );
+        console.log("result PLEASEWORK2:", resources);
+
         resources.resources = resources.resources.filter(
           (res) => res.asset_folder === ""
         );
+        console.log("result PLEASEWORK3:", resources);
       }
 
       // add the missing original name INDEX/MATCHING from resources using public_id
       for (const file of resources.resources) {
-        const dbFile = await db.getFileName(file.public_id);
+        file.user = req.user.user_id;
+        const dbFile = await db.getFileName(file.public_id, req.user.user_id);
         if (dbFile) {
           file.original_name = dbFile.original_name;
         } else {
@@ -69,7 +83,7 @@ const cloudinaryFileManager = {
       let isSubFolder = false;
       let subfolderPath = "";
       let result;
-      console.log("req.params.subfolder: ",req.params.subfolder);
+      console.log("req.params.subfolder: ", req.params.subfolder);
       if (typeof req.params.subfolder !== "undefined") {
         subfolderPath = req.params.subfolder;
         isSubFolder = true;
@@ -77,7 +91,7 @@ const cloudinaryFileManager = {
 
       // Upload to Cloudinary
 
-      console.log("subfolderPath: ",subfolderPath)
+      console.log("subfolderPath: ", subfolderPath);
 
       // if on subfolder
       if (isSubFolder) {
@@ -85,6 +99,11 @@ const cloudinaryFileManager = {
           resource_type: "auto",
           overwrite: true,
           asset_folder: subfolderPath,
+          context: {
+            custom: {
+              user_id: req.user.user_id.toString(),
+            },
+          },
         });
         req.cloudinaryResponse = result;
         // if on root
@@ -92,6 +111,11 @@ const cloudinaryFileManager = {
         result = await cloudinary.uploader.upload(req.file.path, {
           resource_type: "auto",
           overwrite: true,
+          context: {
+            custom: {
+              user_id: req.user.user_id.toString(),
+            },
+          },
         });
         req.cloudinaryResponse = result;
       }
@@ -111,7 +135,10 @@ const cloudinaryFileManager = {
         req.fileSizeUnit = "MB";
       } else req.fileSizeUnit = "Kb";
 
-      const dbFile = await db.getFileName(req.fileDetails.public_id);
+      const dbFile = await db.getFileName(
+        req.fileDetails.public_id,
+        req.user.user_id
+      );
       if (dbFile)
         req.fileDetails = {
           ...req.fileDetails,
@@ -140,8 +167,8 @@ const cloudinaryFileManager = {
     }
   },
   folderDelete: async (req, res, next) => {
-    console.log("req.params.dir: ", req.params.dir)
-    const subfolder = req.params.dir
+    console.log("req.params.dir: ", req.params.dir);
+    const subfolder = req.params.dir;
     try {
       await cloudinary.api.delete_folder(subfolder);
       next();
@@ -149,7 +176,7 @@ const cloudinaryFileManager = {
       console.error("Cloudinary delete error:", error);
       throw error;
     }
-  }
+  },
 };
 
 module.exports = cloudinaryFileManager;
