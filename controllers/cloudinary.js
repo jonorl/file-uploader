@@ -2,6 +2,7 @@ const { v2: cloudinary } = require("cloudinary");
 const path = require("path");
 require("dotenv").config();
 const db = require("../db/queries");
+const { dir } = require("console");
 
 (async function () {
   // Configuration
@@ -138,6 +139,17 @@ const cloudinaryFileManager = {
       throw error;
     }
   },
+  folderDelete: async (req, res, next) => {
+    console.log("req.params.dir: ", req.params.dir)
+    const subfolder = req.params.dir
+    try {
+      await cloudinary.api.delete_folder(subfolder);
+      next();
+    } catch (error) {
+      console.error("Cloudinary delete error:", error);
+      throw error;
+    }
+  }
 };
 
 module.exports = cloudinaryFileManager;

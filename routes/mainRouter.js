@@ -37,7 +37,7 @@ mainRouter.get("/file-new-name/:file(*)", mainController.getFileEdit);
 
 mainRouter.get(
   "/dir-delete/:dir(*)",
-  fileManager.deleteDir,
+  cloudinaryFileManager.folderDelete,
   mainController.getDel
 );
 
