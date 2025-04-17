@@ -64,6 +64,7 @@ async function getUpload(req, res) {
     showGoUp: req.showGoUp,
     cloudinaryRootFolderRead: req.cloudinaryRootFolderRead,
     cloudinaryListFiles: req.cloudinaryListFiles,
+    subfolder: req.params.subfolder,
   });
 }
 

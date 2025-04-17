@@ -84,19 +84,18 @@
         <i id="<%= file.asset_id %>" class="fas fa-trash-alt"></i>
       </a>
     </div>
-    <% }); %> <% if (user) { %>
+    <% }); %> 
     <div class="addFile">
-      <form action="/upload" method="POST" enctype="multipart/form-data">
+      <form action="/upload/<%= subfolder %>" method="POST" enctype="multipart/form-data">
         <label for="upload">Upload file</label>
         <input type="file" name="avatar" />
+        <button class="addNewFile" type="submit">+</button>
         <% if (typeof errors !== 'undefined' && errors.length > 0) { %>
         <ul class="errors">
           <% errors.forEach(error => { %>
           <li><%= error.msg %></li>
           <% }); %>
         </ul>
-        <% } %>
-        <button class="addNewFile" type="submit">+</button>
       </form>
     </div>
     <% } %> <% } else { %>

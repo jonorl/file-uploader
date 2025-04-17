@@ -37,11 +37,13 @@ const cloudinaryFileManager = {
         // If on root
       } else {
         rootFolders = await cloudinary.api.root_folders();
-        resources = await cloudinary.api.resources({ max_results: 100, type: 'upload', });
+        resources = await cloudinary.api.resources({
+          max_results: 100,
+          type: "upload",
+        });
         resources.resources = resources.resources.filter(
-          (res) => res.asset_folder === ''
+          (res) => res.asset_folder === ""
         );
-        console.log("resources: ",resources.resources)
       }
 
       // add the missing original name INDEX/MATCHING from resources using public_id
@@ -55,7 +57,6 @@ const cloudinaryFileManager = {
       }
       req.cloudinaryRootFolderRead = rootFolders;
       req.cloudinaryListFiles = resources;
-      console.log("root folder: ", rootFolders.folders);
       next();
     } catch (err) {
       next(err);
@@ -64,12 +65,35 @@ const cloudinaryFileManager = {
   create: async (req, res, next) => {
     // req.file.path comes from Multer (a.k.a "upload" on router)
     try {
+      let isSubFolder = false;
+      let subfolderPath = "";
+      let result;
+      console.log("req.params.subfolder: ",req.params.subfolder);
+      if (typeof req.params.subfolder !== "undefined") {
+        subfolderPath = req.params.subfolder;
+        isSubFolder = true;
+      }
+
       // Upload to Cloudinary
-      const result = await cloudinary.uploader.upload(req.file.path, {
-        resource_type: "auto",
-        overwrite: true,
-      });
-      req.cloudinaryResponse = result;
+
+      console.log("subfolderPath: ",subfolderPath)
+
+      // if on subfolder
+      if (isSubFolder) {
+        result = await cloudinary.uploader.upload(req.file.path, {
+          resource_type: "auto",
+          overwrite: true,
+          asset_folder: subfolderPath,
+        });
+        req.cloudinaryResponse = result;
+        // if on root
+      } else {
+        result = await cloudinary.uploader.upload(req.file.path, {
+          resource_type: "auto",
+          overwrite: true,
+        });
+        req.cloudinaryResponse = result;
+      }
       next();
     } catch (err) {
       console.error("Cloudinary upload error:", err);

@@ -85,6 +85,13 @@ mainRouter.post(
   mainController.postUpload
 );
 
+mainRouter.post(
+  "/upload/:subfolder(*)",
+  upload,
+  cloudinaryFileManager.create,
+  mainController.postUpload
+);
+
 mainRouter.post("/newDir", fileManager.create, mainController.postNewDir);
 
 mainRouter.post(
