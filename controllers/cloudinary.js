@@ -91,7 +91,11 @@ const cloudinaryFileManager = {
         } catch (err) {}
       }
 
-      // Let's try to get rid of this:
+      // This lists ALL folders irrespective of the user.
+
+      // create a db query to list all the asset_folders in this root/subfolder and then
+      // recreate the folderList object to show the folders   
+
       rootFolders = await cloudinary.api.sub_folders(subfolderPath);
       console.log("quePorongaEsEsto? ", rootFolders)
 
