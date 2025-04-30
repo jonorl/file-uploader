@@ -75,11 +75,13 @@ const cloudinaryFileManager = {
       const pathParts = fullPath.replace(/^\/|\/$/g, "").split("/");
       const finalSubfolder = pathParts[pathParts.length - 1];
       const parentPath = pathParts.slice(0, -1).join("/");
-      subfolderPath = finalSubfolder + "/" + parentPath;
+      subfolderPath = parentPath + "/" + finalSubfolder;
+      console.log("subfolderPathRucunchutado: ", subfolderPath)
 
       const publicIDsArray = db.getFilesBasedOnIDAndFolder(
         req.user.user_id,
-        subfolderPath
+        finalSubfolder,
+        parentPath,
       );
 
       for (const id of await publicIDsArray) {
@@ -91,6 +93,7 @@ const cloudinaryFileManager = {
 
       // Let's try to get rid of this:
       rootFolders = await cloudinary.api.sub_folders(subfolderPath);
+      console.log("quePorongaEsEsto? ", rootFolders)
 
       // add the missing original name INDEX/MATCHING from resources using public_id
       for (const file of resources) {
@@ -195,11 +198,13 @@ const cloudinaryFileManager = {
       const finalSubfolder = pathParts[pathParts.length - 1];
       const parentPath = pathParts.slice(0, -1).join("/");
 
+      const cloudinaryNewName = parentPath + "/" + newFolderName
+
       // Here be the DB folderName change
 
       db.changeFolderName(req.user, finalSubfolder, parentPath, newFolderName);
 
-      await cloudinary.api.rename_folder(oldFolderName, newFolderName);
+      await cloudinary.api.rename_folder(oldFolderName, cloudinaryNewName);
       next();
     } catch (err) {
       console.error("Cloudinary folder rename error:", err);

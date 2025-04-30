@@ -172,7 +172,7 @@ async function getAllFiles(id) {
   return files;
 }
 
-async function getFileName(publicID, userID, ) {
+async function getFileName(publicID, userID) {
   const files = await prisma.resources.findMany({
     where: {
       user_id: userID,
@@ -203,11 +203,12 @@ async function delFile(publicID) {
   return del;
 }
 
-async function getFilesBasedOnIDAndFolder(id, folder) {
+async function getFilesBasedOnIDAndFolder(id, finalSubfolder, parentSubfolder) {
   const filesArray = await prisma.resources.findMany({
     where: {
       user_id: id,
-      asset_folder: folder,
+      asset_folder: finalSubfolder,
+      parent_folder: parentSubfolder,
     },
   });
   const publicIds = filesArray.map(file => file.public_id);
