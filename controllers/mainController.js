@@ -4,11 +4,9 @@ const db = require("../db/queries");
 const bcrypt = require("bcryptjs");
 const passport = require("passport");
 const { validationResult } = require("express-validator");
-const { fileManager } = require("./CRUD");
 
 // Optional, load express to format dates
 const moment = require("moment");
-const { localsName } = require("ejs");
 
 async function getIndex(req, res) {
   const board = await db.getAllUsernames();
@@ -185,13 +183,14 @@ async function postProfile(req, res) {
 }
 
 async function postUpload(req, res) {
-  db.insertURL(
+  db.addToResourcesTable(
     req.user.user_id,
     req.cloudinaryResponse.url,
     req.cloudinaryResponse.public_id,
     req.cloudinaryResponse.resource_type,
     req.cloudinaryResponse.original_filename,
     req.cloudinaryResponse.asset_folder,
+    req.isSubFolder,
     req.cloudinaryResponse
   );
   console.log("file added to db successfully");

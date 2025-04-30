@@ -14,6 +14,40 @@ const { dir } = require("console");
 })();
 
 const cloudinaryFileManager = {
+  create: async (req, res, next) => {
+    // req.file.path comes from Multer (a.k.a "upload" on router)
+    try {
+      let isSubFolder = false;
+      let subfolderPath = "";
+      let result;
+
+      // IF there's a subfolder name, set it to subfolderPath var
+      if (typeof req.params.subfolder !== "undefined") {
+        subfolderPath = req.params.subfolder;
+        isSubFolder = true;
+      }
+
+      // Upload to Cloudinary
+
+      result = await cloudinary.uploader.upload(req.file.path, {
+        resource_type: "auto",
+        overwrite: true,
+        asset_folder: subfolderPath,
+        context: {
+          custom: {
+            user_id: req.user.user_id.toString(),
+          },
+        },
+      });
+      req.cloudinaryResponse = result;
+      req.isSubFolder = isSubFolder;
+      next();
+    } catch (err) {
+      console.error("Cloudinary upload error:", err);
+      next(err);
+    }
+  },
+
   read: async (req, res, next) => {
     let isSubFolder = false;
     try {
@@ -22,108 +56,87 @@ const cloudinaryFileManager = {
         subfolderPath = req.params.subfolder;
         isSubFolder = true;
       }
-      let resources;
-      let rootFolders;
+      let resources = [];
 
-      // If on subfolder
-      if (isSubFolder) {
-        resources = await cloudinary.api.resources_by_asset_folder(
-          subfolderPath,
-          { max_results: 100, context: true }
-        );
+      const publicIDsArray = db.getFilesBasedOnIDAndFolder(
+        req.user.user_id,
+        subfolderPath
+      );
 
-        resources.resources = resources.resources.filter(
-          (file) =>
-            file.context?.custom?.user_id === req.user.user_id.toString()
-        );
-
-        rootFolders = await cloudinary.api.sub_folders(subfolderPath);
-        // If on root
-      } else {
-        rootFolders = await cloudinary.api.root_folders({
-          max_results: 100
-        });
-        // rootFolders = await cloudinary.api.sub_folders("");
-        resources = await cloudinary.api.resources({
-          max_results: 100,
-          type: "upload",
-          context: true,
-          with_field: "context",
-        });
-
-        resources.resources = resources.resources.filter(
-          (file) =>
-            file.context?.custom?.user_id === req.user.user_id.toString()
-        );
-
-        resources.resources = resources.resources.filter(
-          (res) => res.asset_folder === ""
-        );
+      // New attempt
+      for (const id of await publicIDsArray) {
+        try {
+          const resource = await cloudinary.api.resource(id.public_id || id);
+          resources.push(resource);
+        } catch (err) {}
       }
 
-      // add the missing original name INDEX/MATCHING from resources using public_id
-      for (const file of resources.resources) {
-        file.user = req.user.user_id;
-        const dbFile = await db.getFileName(file.public_id, req.user.user_id);
-        if (dbFile) {
-          file.original_name = dbFile.original_name;
-        } else {
-          file.original_name = null;
-        }
-      }
+      // // If on subfolder
+      // if (isSubFolder) {
+      //   resources = await cloudinary.api.resources_by_asset_folder(
+      //     subfolderPath,
+      //     { max_results: 100, context: true }
+      //   );
+
+      //   resources.resources = resources.resources.filter(
+      //     (file) =>
+      //       file.context?.custom?.user_id === req.user.user_id.toString()
+      //   );
+
+
+
+
+
+      // Let's try to get rid of this:
+         rootFolders = await cloudinary.api.sub_folders(subfolderPath);
+
+
+
+
+
+
+      //   // If on root
+      // } else {
+      //   rootFolders = await cloudinary.api.root_folders({
+      //     max_results: 100,
+      //   });
+      //   // rootFolders = await cloudinary.api.sub_folders("");
+      //   resources = await cloudinary.api.resources({
+      //     max_results: 100,
+      //     type: "upload",
+      //     context: true,
+      //     with_field: "context",
+      //   });
+
+      //   resources.resources = resources.resources.filter(
+      //     (file) =>
+      //       file.context?.custom?.user_id === req.user.user_id.toString()
+      //   );
+
+      //   resources.resources = resources.resources.filter(
+      //     (res) => res.asset_folder === ""
+      //   );
+      // }
+
+      // // add the missing original name INDEX/MATCHING from resources using public_id
+      // for (const file of resources.resources) {
+      //   file.user = req.user.user_id;
+      //   const dbFile = await db.getFileName(file.public_id, req.user.user_id);
+      //   if (dbFile) {
+      //     file.original_name = dbFile.original_name;
+      //   } else {
+      //     file.original_name = null;
+      //   }
+      // }
       req.cloudinaryRootFolderRead = rootFolders;
       req.cloudinaryListFiles = resources;
+      console.log("req.cloudinaryListFiles", req.cloudinaryListFiles)
       next();
     } catch (err) {
       next(err);
     }
   },
-  create: async (req, res, next) => {
-    // req.file.path comes from Multer (a.k.a "upload" on router)
-    try {
-      let isSubFolder = false;
-      let subfolderPath = "";
-      let result;
-      console.log("req.params.subfolder: ", req.params.subfolder);
-      if (typeof req.params.subfolder !== "undefined") {
-        subfolderPath = req.params.subfolder;
-        isSubFolder = true;
-      }
 
-      // Upload to Cloudinary
-
-      // if on subfolder
-      if (isSubFolder) {
-        result = await cloudinary.uploader.upload(req.file.path, {
-          resource_type: "auto",
-          overwrite: true,
-          asset_folder: subfolderPath,
-          context: {
-            custom: {
-              user_id: req.user.user_id.toString(),
-            },
-          },
-        });
-        req.cloudinaryResponse = result;
-        // if on root
-      } else {
-        result = await cloudinary.uploader.upload(req.file.path, {
-          resource_type: "auto",
-          overwrite: true,
-          context: {
-            custom: {
-              user_id: req.user.user_id.toString(),
-            },
-          },
-        });
-        req.cloudinaryResponse = result;
-      }
-      next();
-    } catch (err) {
-      console.error("Cloudinary upload error:", err);
-      next(err);
-    }
-  },
   fileDetails: async (req, res, next) => {
     console.log("req.params.file: ", req.params.file);
     const publicID = req.params.file;
@@ -177,7 +190,7 @@ const cloudinaryFileManager = {
   },
   folderCreate: async (req, res, next) => {
     try {
-      const subfolderName = req.body.newDir;
+      const subfolderName = req.body.dirName;
       const filePath = path.resolve(__dirname, "placeholder.png");
       let fullPath = subfolderName;
 

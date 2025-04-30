@@ -137,13 +137,14 @@ async function updateCreatedAt(email) {
   return result;
 }
 
-async function insertURL(
+async function addToResourcesTable(
   user,
   url,
   publicID,
   resourceType,
   originalName,
   folder,
+  isSubFolder,
   metadata
 ) {
   await prisma.resources.create({
@@ -154,6 +155,7 @@ async function insertURL(
       resource_type: resourceType,
       original_name: originalName,
       asset_folder: folder,
+      is_folder: isSubFolder,
       metadata: metadata,
     },
   });
@@ -168,7 +170,7 @@ async function getAllFiles(id) {
   return files;
 }
 
-async function getFileName(publicID, userID) {
+async function getFileName(publicID, userID, ) {
   const files = await prisma.resources.findMany({
     where: {
       user_id: userID,
@@ -200,6 +202,18 @@ async function delFile(publicID) {
   return del;
 }
 
+async function getFilesBasedOnIDAndFolder(id, folder) {
+  const filesArray = await prisma.resources.findMany({
+    where: {
+      user_id: id,
+      asset_folder: folder,
+    },
+  });
+  const publicIds = filesArray.map(file => file.public_id);
+  console.log(publicIds)
+  return publicIds;
+}
+
 module.exports = {
   serialise,
   deserialise,
@@ -211,9 +225,10 @@ module.exports = {
   deleteMessage,
   incrementVisits,
   updateCreatedAt,
-  insertURL,
+  addToResourcesTable,
   getAllFiles,
   getFileName,
   updateName,
   delFile,
+  getFilesBasedOnIDAndFolder,
 };

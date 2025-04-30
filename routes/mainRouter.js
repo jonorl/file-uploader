@@ -26,8 +26,6 @@ mainRouter.get("/profile", mainController.getProfile);
 
 mainRouter.get("/delete/:messageId(*)", mainController.getDelete);
 
-mainRouter.get("/upload", checkDir, cloudinaryFileManager.read, mainController.getUpload);
-
 mainRouter.get(
   "/dir-new-name/:dir(*)",
   mainController.getDirEdit

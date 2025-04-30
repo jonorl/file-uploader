@@ -50,6 +50,8 @@ model resources {
   url_address   String
   original_name String
   asset_folder  String?
+  parent_folder String?
+  is_folder     Boolean   @default(false)   
   public_id     String    @unique @db.VarChar(255)
   resource_type String    @default("image") @db.VarChar(50)
   created_at    DateTime? @default(now()) @db.Timestamp(6)

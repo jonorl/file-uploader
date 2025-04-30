@@ -71,7 +71,7 @@
     <!-- Cloudinary Files -->
     <h1>Files (cloudinary)</h1>
 
-    <% cloudinaryListFiles.resources.forEach(file => { %>
+    <% cloudinaryListFiles.forEach(file => { %>
     <div class="file-container">
       <a class="download" href="<%= file.url %>"><%= file.original_name %></a>
       <a class="details" href="/file-details/<%= file.public_id %>">
