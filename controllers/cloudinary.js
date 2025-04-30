@@ -58,6 +58,8 @@ const cloudinaryFileManager = {
       }
       let resources = [];
 
+      console.log("subfolderPath: ", subfolderPath)
+
       const publicIDsArray = db.getFilesBasedOnIDAndFolder(
         req.user.user_id,
         subfolderPath
@@ -118,19 +120,19 @@ const cloudinaryFileManager = {
       //   );
       // }
 
-      // // add the missing original name INDEX/MATCHING from resources using public_id
-      // for (const file of resources.resources) {
-      //   file.user = req.user.user_id;
-      //   const dbFile = await db.getFileName(file.public_id, req.user.user_id);
-      //   if (dbFile) {
-      //     file.original_name = dbFile.original_name;
-      //   } else {
-      //     file.original_name = null;
-      //   }
-      // }
+      // add the missing original name INDEX/MATCHING from resources using public_id
+      for (const file of resources) {
+        file.user = req.user.user_id;
+        const dbFile = await db.getFileName(file.public_id, req.user.user_id);
+        if (dbFile) {
+          file.original_name = dbFile.original_name;
+        } else {
+          file.original_name = null;
+        }
+      }
+
       req.cloudinaryRootFolderRead = rootFolders;
       req.cloudinaryListFiles = resources;
-      console.log("req.cloudinaryListFiles", req.cloudinaryListFiles)
       next();
     } catch (err) {
       next(err);
