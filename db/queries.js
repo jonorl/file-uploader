@@ -177,7 +177,6 @@ async function getFileName(publicID, userID, ) {
       public_id: publicID,
     },
   });
-  console.log("files: ",files[0])
   return files[0];
 }
 
@@ -210,7 +209,6 @@ async function getFilesBasedOnIDAndFolder(id, folder) {
     },
   });
   const publicIds = filesArray.map(file => file.public_id);
-  console.log(publicIds)
   return publicIds;
 }
 

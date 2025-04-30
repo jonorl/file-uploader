@@ -41,7 +41,7 @@
     <% } %>
 
     <div class="addDir">
-      <form action="/newDir" method="POST">
+      <form action="/newDir/<%= subfolder %>" method="POST">
         <label for="newDir">New folder</label>
         <input type="text" name="dirName" />
         <input type="hidden" name="subfolder" value="TBC" />

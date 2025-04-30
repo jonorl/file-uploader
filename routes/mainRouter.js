@@ -90,7 +90,7 @@ mainRouter.post(
   mainController.postUpload
 );
 
-mainRouter.post("/newDir", cloudinaryFileManager.folderCreate, mainController.postNewDir);
+mainRouter.post("/newDir/:subfolder(*)", cloudinaryFileManager.folderCreate, mainController.postNewDir);
 
 mainRouter.post(
   "/dir-new-name/:oldName(*)/",

@@ -57,7 +57,6 @@ const cloudinaryFileManager = {
         isSubFolder = true;
       }
       let resources = [];
-
       console.log("subfolderPath: ", subfolderPath)
 
       const publicIDsArray = db.getFilesBasedOnIDAndFolder(
@@ -65,7 +64,6 @@ const cloudinaryFileManager = {
         subfolderPath
       );
 
-      // New attempt
       for (const id of await publicIDsArray) {
         try {
           const resource = await cloudinary.api.resource(id.public_id || id);
@@ -73,52 +71,8 @@ const cloudinaryFileManager = {
         } catch (err) {}
       }
 
-      // // If on subfolder
-      // if (isSubFolder) {
-      //   resources = await cloudinary.api.resources_by_asset_folder(
-      //     subfolderPath,
-      //     { max_results: 100, context: true }
-      //   );
-
-      //   resources.resources = resources.resources.filter(
-      //     (file) =>
-      //       file.context?.custom?.user_id === req.user.user_id.toString()
-      //   );
-
-
-
-
-
       // Let's try to get rid of this:
          rootFolders = await cloudinary.api.sub_folders(subfolderPath);
-
-
-
-
-
-
-      //   // If on root
-      // } else {
-      //   rootFolders = await cloudinary.api.root_folders({
-      //     max_results: 100,
-      //   });
-      //   // rootFolders = await cloudinary.api.sub_folders("");
-      //   resources = await cloudinary.api.resources({
-      //     max_results: 100,
-      //     type: "upload",
-      //     context: true,
-      //     with_field: "context",
-      //   });
-
-      //   resources.resources = resources.resources.filter(
-      //     (file) =>
-      //       file.context?.custom?.user_id === req.user.user_id.toString()
-      //   );
-
-      //   resources.resources = resources.resources.filter(
-      //     (res) => res.asset_folder === ""
-      //   );
-      // }
 
       // add the missing original name INDEX/MATCHING from resources using public_id
       for (const file of resources) {
@@ -193,12 +147,13 @@ const cloudinaryFileManager = {
   folderCreate: async (req, res, next) => {
     try {
       const subfolderName = req.body.dirName;
-      const filePath = path.resolve(__dirname, "placeholder.png");
       let fullPath = subfolderName;
 
+      console.log("req.params.subfolder: ",req.params.subfolder)
       // If in a subfolder, prepend the existing path
       if (req.params.subfolder) {
         fullPath = `${req.params.subfolder}/${subfolderName}`;
+        console.log(fullPath)
       }
 
       await cloudinary.api.create_folder(fullPath);
