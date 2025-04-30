@@ -93,6 +93,13 @@ async function getFileDetails(req, res) {
   });
 }
 
+async function getDirUpdate(req, res) {
+  res.render("../views/dir-new-name", {
+    oldName: req.params.dirName,
+    user: req.user,
+  })
+}
+
 async function postSignUp(req, res, next) {
   // Handle validation errors
   const errors = validationResult(req);
@@ -188,7 +195,8 @@ async function postUpload(req, res) {
     req.cloudinaryResponse.public_id,
     req.cloudinaryResponse.resource_type,
     req.cloudinaryResponse.original_filename,
-    req.cloudinaryResponse.asset_folder,
+    req.finalSubfolder,
+    req.parentSubfolders,
     req.isSubFolder,
     req.cloudinaryResponse
   );
@@ -223,6 +231,7 @@ module.exports = {
   getFileEdit,
   getDel,
   getFileDetails,
+  getDirUpdate,
   postSignUp,
   postLogin,
   postNewMessage,

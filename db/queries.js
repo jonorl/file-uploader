@@ -144,6 +144,7 @@ async function addToResourcesTable(
   resourceType,
   originalName,
   folder,
+  parent,
   isSubFolder,
   metadata
 ) {
@@ -155,6 +156,7 @@ async function addToResourcesTable(
       resource_type: resourceType,
       original_name: originalName,
       asset_folder: folder,
+      parent_folder: parent,
       is_folder: isSubFolder,
       metadata: metadata,
     },
@@ -212,6 +214,20 @@ async function getFilesBasedOnIDAndFolder(id, folder) {
   return publicIds;
 }
 
+async function changeFolderName(id, folderName, parentFolder, newFolderName) {
+  const result = await prisma.resources.updateMany({
+    where: {
+      user_id: id.user_id,
+      asset_folder: folderName,
+      parent_folder: parentFolder
+    },
+    data: {
+      asset_folder: newFolderName,
+    },
+  });
+  return result;
+}
+
 module.exports = {
   serialise,
   deserialise,
@@ -229,4 +245,5 @@ module.exports = {
   updateName,
   delFile,
   getFilesBasedOnIDAndFolder,
+  changeFolderName,
 };

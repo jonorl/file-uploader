@@ -63,6 +63,11 @@ mainRouter.get(
   mainController.getFileDetails
 );
 
+mainRouter.get(
+  "/dir-update/:dirName(*)",
+  mainController.getDirUpdate
+);
+
 mainRouter.post(
   "/sign-up",
   [...validateUser, ...validateEmail],
@@ -94,7 +99,7 @@ mainRouter.post("/newDir/:subfolder(*)", cloudinaryFileManager.folderCreate, mai
 
 mainRouter.post(
   "/dir-new-name/:oldName(*)/",
-  fileManager.updateDirName,
+  cloudinaryFileManager.folderRename,
   mainController.postDirEdit
 );
 

@@ -41,6 +41,16 @@ const cloudinaryFileManager = {
       });
       req.cloudinaryResponse = result;
       req.isSubFolder = isSubFolder;
+
+      // split last subfolder from parent subfolders
+
+      const fullPath = req.cloudinaryResponse.asset_folder;
+      const pathParts = fullPath.replace(/^\/|\/$/g, "").split("/");
+      const finalSubfolder = pathParts[pathParts.length - 1];
+      const parentPath = pathParts.slice(0, -1).join("/");
+      req.finalSubfolder = finalSubfolder;
+      req.parentSubfolders = parentPath;
+
       next();
     } catch (err) {
       console.error("Cloudinary upload error:", err);
@@ -57,7 +67,15 @@ const cloudinaryFileManager = {
         isSubFolder = true;
       }
       let resources = [];
-      console.log("subfolderPath: ", subfolderPath)
+      console.log("subfolderPath: ", subfolderPath);
+
+      // get folder and subfolder names
+
+      const fullPath = subfolderPath;
+      const pathParts = fullPath.replace(/^\/|\/$/g, "").split("/");
+      const finalSubfolder = pathParts[pathParts.length - 1];
+      const parentPath = pathParts.slice(0, -1).join("/");
+      subfolderPath = finalSubfolder + "/" + parentPath;
 
       const publicIDsArray = db.getFilesBasedOnIDAndFolder(
         req.user.user_id,
@@ -72,7 +90,7 @@ const cloudinaryFileManager = {
       }
 
       // Let's try to get rid of this:
-         rootFolders = await cloudinary.api.sub_folders(subfolderPath);
+      rootFolders = await cloudinary.api.sub_folders(subfolderPath);
 
       // add the missing original name INDEX/MATCHING from resources using public_id
       for (const file of resources) {
@@ -149,11 +167,11 @@ const cloudinaryFileManager = {
       const subfolderName = req.body.dirName;
       let fullPath = subfolderName;
 
-      console.log("req.params.subfolder: ",req.params.subfolder)
+      console.log("req.params.subfolder: ", req.params.subfolder);
       // If in a subfolder, prepend the existing path
       if (req.params.subfolder) {
         fullPath = `${req.params.subfolder}/${subfolderName}`;
-        console.log(fullPath)
+        console.log(fullPath);
       }
 
       await cloudinary.api.create_folder(fullPath);
@@ -161,6 +179,30 @@ const cloudinaryFileManager = {
       next();
     } catch (err) {
       console.error("Cloudinary upload error:", err);
+      next(err);
+    }
+  },
+
+  folderRename: async (req, res, next) => {
+    try {
+      const oldFolderName = req.params.oldName;
+      const newFolderName = req.body.newName;
+
+      // Split subfolder names
+
+      const fullPath = oldFolderName;
+      const pathParts = fullPath.replace(/^\/|\/$/g, "").split("/");
+      const finalSubfolder = pathParts[pathParts.length - 1];
+      const parentPath = pathParts.slice(0, -1).join("/");
+
+      // Here be the DB folderName change
+
+      db.changeFolderName(req.user, finalSubfolder, parentPath, newFolderName);
+
+      await cloudinary.api.rename_folder(oldFolderName, newFolderName);
+      next();
+    } catch (err) {
+      console.error("Cloudinary folder rename error:", err);
       next(err);
     }
   },
