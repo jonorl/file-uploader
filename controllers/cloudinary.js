@@ -61,8 +61,8 @@ const cloudinaryFileManager = {
   read: async (req, res, next) => {
     let isSubFolder = false;
     try {
-      let subfolderPath = "";
-      if (req.params.subfolder !== "") {
+      let subfolderPath = "/";
+      if (req.params.subfolder && req.params.subfolder !== "") {
         subfolderPath = req.params.subfolder;
         isSubFolder = true;
       }
@@ -92,15 +92,6 @@ const cloudinaryFileManager = {
           parentPath
         );
       }
-      console.log(
-        "parentPath",
-        parentPath
-      );
-      console.log(
-        "finalSubfolder",
-        finalSubfolder
-      );
-      console.log("resources", resources);
 
       for (const id of await publicIDsArray) {
         try {
@@ -108,7 +99,6 @@ const cloudinaryFileManager = {
           resources.push(resource);
         } catch (err) {}
       }
-      console.log("resources", resources);
 
       rootFolders = await cloudinary.api.sub_folders(
         "/" + req.user.user_id + subfolderPath
