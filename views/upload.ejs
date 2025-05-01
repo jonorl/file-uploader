@@ -54,7 +54,7 @@
 
     <% cloudinaryRootFolderRead.folders.forEach(folder => { %>
     <div class="dir-container">
-      <a class="navigate" href="/upload/<%= folder.path %>"><%= folder.name %></a>
+      <a class="navigate" href="/upload/<%= folder.path.slice(user.user_id.toString().length + 1) %>"><%= folder.name %></a>
       <a class="edit" href="/dir-update/<%= folder.path %>">
         <i id="<%= folder.name %>" class="fas fa-edit"></i>
       </a>

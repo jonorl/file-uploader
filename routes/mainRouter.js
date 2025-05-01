@@ -6,7 +6,7 @@ const { validateUser } = require("../controllers/formValidation");
 const { validateEmail } = require("../controllers/emailDuplicateValidation");
 const { validateMembership } = require("../controllers/profileValidator");
 const { upload } = require("../controllers/multer");
-const { checkDir } = require("../controllers/checkDir");
+const { checkDirCloudinary } = require("../controllers/checkDir");
 const fileManager = require("../controllers/CRUD");
 const cloudinaryFileManager = require("../controllers/cloudinary");
 
@@ -47,6 +47,7 @@ mainRouter.get(
 
 mainRouter.get(
   "/upload/:subfolder(*)?",
+  checkDirCloudinary,
   (req, res, next) => {
     if (req.params) {
       req.isNavigateUp = true;
@@ -82,7 +83,7 @@ mainRouter.post("/profile", validateMembership, mainController.postProfile);
 
 mainRouter.post(
   "/upload",
-  checkDir,
+  checkDirCloudinary,
   upload,
   cloudinaryFileManager.create,
   mainController.postUpload

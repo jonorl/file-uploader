@@ -58,7 +58,6 @@ async function getDelete(req, res) {
 async function getUpload(req, res) {
   res.render("../views/upload", {
     user: req.user,
-    showGoUp: req.showGoUp,
     cloudinaryRootFolderRead: req.cloudinaryRootFolderRead,
     cloudinaryListFiles: req.cloudinaryListFiles,
     subfolder: req.params.subfolder,

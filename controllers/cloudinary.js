@@ -32,7 +32,7 @@ const cloudinaryFileManager = {
       result = await cloudinary.uploader.upload(req.file.path, {
         resource_type: "auto",
         overwrite: true,
-        asset_folder: subfolderPath,
+        asset_folder: req.user.user_id + "/" + subfolderPath,
         context: {
           custom: {
             user_id: req.user.user_id.toString(),
@@ -62,12 +62,11 @@ const cloudinaryFileManager = {
     let isSubFolder = false;
     try {
       let subfolderPath = "";
-      if (typeof req.params.subfolder !== "undefined") {
+      if (req.params.subfolder !== "") {
         subfolderPath = req.params.subfolder;
         isSubFolder = true;
       }
       let resources = [];
-      console.log("subfolderPath: ", subfolderPath);
 
       // get folder and subfolder names
 
@@ -76,13 +75,32 @@ const cloudinaryFileManager = {
       const finalSubfolder = pathParts[pathParts.length - 1];
       const parentPath = pathParts.slice(0, -1).join("/");
       subfolderPath = parentPath + "/" + finalSubfolder;
-      console.log("subfolderPathRucunchutado: ", subfolderPath)
 
-      const publicIDsArray = db.getFilesBasedOnIDAndFolder(
-        req.user.user_id,
-        finalSubfolder,
-        parentPath,
+      let publicIDsArray
+      if (isSubFolder) {
+        console.log("alla", isSubFolder)
+        publicIDsArray = db.getFilesBasedOnIDAndFolder(
+          req.user.user_id,
+          finalSubfolder,
+          req.user.user_id + parentPath
+        );
+      } else {
+        console.log("aca", isSubFolder)
+        publicIDsArray = db.getFilesBasedOnIDAndFolder(
+          req.user.user_id,
+          req.user.user_id + finalSubfolder,
+          parentPath
+        );
+      }
+      console.log(
+        "parentPath",
+        parentPath
       );
+      console.log(
+        "finalSubfolder",
+        finalSubfolder
+      );
+      console.log("resources", resources);
 
       for (const id of await publicIDsArray) {
         try {
@@ -90,15 +108,11 @@ const cloudinaryFileManager = {
           resources.push(resource);
         } catch (err) {}
       }
+      console.log("resources", resources);
 
-      // This lists ALL folders irrespective of the user.
-
-      // create a db query to list all the asset_folders in this root/subfolder and then
-      // recreate the folderList object to show the folders   
-
-      rootFolders = await cloudinary.api.sub_folders(subfolderPath);
-      console.log("quePorongaEsEsto? ", rootFolders)
-
+      rootFolders = await cloudinary.api.sub_folders(
+        "/" + req.user.user_id + subfolderPath
+      );
       // add the missing original name INDEX/MATCHING from resources using public_id
       for (const file of resources) {
         file.user = req.user.user_id;
@@ -181,7 +195,7 @@ const cloudinaryFileManager = {
         console.log(fullPath);
       }
 
-      await cloudinary.api.create_folder(fullPath);
+      await cloudinary.api.create_folder(req.user.user_id + "/" + fullPath);
 
       next();
     } catch (err) {
@@ -202,7 +216,7 @@ const cloudinaryFileManager = {
       const finalSubfolder = pathParts[pathParts.length - 1];
       const parentPath = pathParts.slice(0, -1).join("/");
 
-      const cloudinaryNewName = parentPath + "/" + newFolderName
+      const cloudinaryNewName = parentPath + "/" + newFolderName;
 
       // Here be the DB folderName change
 
