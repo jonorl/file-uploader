@@ -70,28 +70,50 @@ const cloudinaryFileManager = {
 
       // get folder and subfolder names
 
-      const fullPath = subfolderPath;
+      let fullPath = subfolderPath;
+      if (fullPath.endsWith('/')) {
+        fullPath = fullPath.slice(0, -1);
+      }
       const pathParts = fullPath.replace(/^\/|\/$/g, "").split("/");
       const finalSubfolder = pathParts[pathParts.length - 1];
       const parentPath = pathParts.slice(0, -1).join("/");
       subfolderPath = parentPath + "/" + finalSubfolder;
 
       let publicIDsArray
-      if (isSubFolder) {
-        console.log("alla", isSubFolder)
+      // If there's more than one subfolder
+      if (isSubFolder && fullPath.split("/").length === 1) {
         publicIDsArray = db.getFilesBasedOnIDAndFolder(
           req.user.user_id,
           finalSubfolder,
           req.user.user_id + parentPath
         );
-      } else {
-        console.log("aca", isSubFolder)
+        console.log("publicIDsArray1", await publicIDsArray)
+        console.log("len: ", fullPath.split("/").length)
+        console.log("finalSubfolder", finalSubfolder)
+        console.log("parentPath", req.user.user_id + parentPath)
+      } 
+      else if (isSubFolder && fullPath.split("/").length > 1) {
         publicIDsArray = db.getFilesBasedOnIDAndFolder(
           req.user.user_id,
-          req.user.user_id + finalSubfolder,
+          finalSubfolder,
+          req.user.user_id + "/" + parentPath
+        );
+        console.log("publicIDsArray2", await publicIDsArray)
+        console.log("len: ", fullPath.split("/").length)
+        console.log("finalSubfolder", finalSubfolder)
+        console.log("parentPath", req.user.user_id + parentPath)
+      } else {
+        publicIDsArray = db.getFilesBasedOnIDAndFolder(
+          req.user.user_id,
+          req.user.user_id + "/" + finalSubfolder,
           parentPath
         );
+        console.log("publicIDsArray3", await publicIDsArray)
+        console.log("finalSubfolder", req.user.user_id + "/" + finalSubfolder)
+        console.log("parentPath", parentPath)
       }
+
+
 
       for (const id of await publicIDsArray) {
         try {
@@ -101,7 +123,7 @@ const cloudinaryFileManager = {
       }
 
       rootFolders = await cloudinary.api.sub_folders(
-        "/" + req.user.user_id + subfolderPath
+        "/" + req.user.user_id + "/" + subfolderPath
       );
       // add the missing original name INDEX/MATCHING from resources using public_id
       for (const file of resources) {
@@ -123,7 +145,6 @@ const cloudinaryFileManager = {
   },
 
   fileDetails: async (req, res, next) => {
-    console.log("req.params.file: ", req.params.file);
     const publicID = req.params.file;
     cloudinary.api.resource(publicID, async function (error, result) {
       console.log("result:", result);
@@ -178,11 +199,9 @@ const cloudinaryFileManager = {
       const subfolderName = req.body.dirName;
       let fullPath = subfolderName;
 
-      console.log("req.params.subfolder: ", req.params.subfolder);
       // If in a subfolder, prepend the existing path
       if (req.params.subfolder) {
         fullPath = `${req.params.subfolder}/${subfolderName}`;
-        console.log(fullPath);
       }
 
       await cloudinary.api.create_folder(req.user.user_id + "/" + fullPath);
