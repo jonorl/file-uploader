@@ -105,11 +105,11 @@ const cloudinaryFileManager = {
       } else {
         publicIDsArray = db.getFilesBasedOnIDAndFolder(
           req.user.user_id,
-          req.user.user_id + "/" + finalSubfolder,
+          req.user.user_id + finalSubfolder,
           parentPath
         );
         console.log("publicIDsArray3", await publicIDsArray)
-        console.log("finalSubfolder", req.user.user_id + "/" + finalSubfolder)
+        console.log("finalSubfolder", req.user.user_id + finalSubfolder)
         console.log("parentPath", parentPath)
       }
 
