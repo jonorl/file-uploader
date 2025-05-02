@@ -28,12 +28,17 @@
   </header>
   <body>
     <p><%=oldName%></p>
-    <% if (user) { %> <% if (user.role === "user") { %>
+    <% if (user) { %>
     <form action="/dir-new-name/<%=oldName%>" method="POST">
       <label for="newName">New Name</label>
-      <input id="newName" name="newName" type="text" placeholder="new folder name" />
+      <input
+        id="newName"
+        name="newName"
+        type="text"
+        placeholder="new folder name"
+      />
       <button type="submit">Rename</button>
     </form>
-    <% }} %>
+    <% } %>
   </body>
 </html>
