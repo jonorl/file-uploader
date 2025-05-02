@@ -87,10 +87,6 @@ const cloudinaryFileManager = {
           finalSubfolder,
           req.user.user_id + parentPath
         );
-        console.log("publicIDsArray1", await publicIDsArray)
-        console.log("len: ", fullPath.split("/").length)
-        console.log("finalSubfolder", finalSubfolder)
-        console.log("parentPath", req.user.user_id + parentPath)
       } 
       else if (isSubFolder && fullPath.split("/").length > 1) {
         publicIDsArray = db.getFilesBasedOnIDAndFolder(
@@ -98,19 +94,12 @@ const cloudinaryFileManager = {
           finalSubfolder,
           req.user.user_id + "/" + parentPath
         );
-        console.log("publicIDsArray2", await publicIDsArray)
-        console.log("len: ", fullPath.split("/").length)
-        console.log("finalSubfolder", finalSubfolder)
-        console.log("parentPath", req.user.user_id + parentPath)
       } else {
         publicIDsArray = db.getFilesBasedOnIDAndFolder(
           req.user.user_id,
           req.user.user_id + finalSubfolder,
           parentPath
         );
-        console.log("publicIDsArray3", await publicIDsArray)
-        console.log("finalSubfolder", req.user.user_id + finalSubfolder)
-        console.log("parentPath", parentPath)
       }
 
 

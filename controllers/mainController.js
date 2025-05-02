@@ -200,20 +200,22 @@ async function postUpload(req, res) {
     req.cloudinaryResponse
   );
   console.log("file added to db successfully");
-  res.redirect("/upload");
+  const referer = req.headers.referer || '/';
+  res.redirect(referer);
 }
 
 async function postNewDir(req, res) {
-  const redirectTo = req.body.redirectTo || "/";
-  res.redirect(redirectTo);
+  const referer = req.headers.referer || '/';
+  res.redirect(referer);
 }
 
 async function postDirEdit(req, res) {
-  const redirectTo = req.body.redirectTo || "/";
-  res.redirect(redirectTo);
+  const referer = req.headers.referer || '/';
+  res.redirect(referer);
 }
 
 async function postNewName(req, res) {
+  const referer = req.headers.referer || '/';
   res.redirect("/upload");
 }
 

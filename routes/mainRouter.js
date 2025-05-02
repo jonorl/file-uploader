@@ -7,7 +7,6 @@ const { validateEmail } = require("../controllers/emailDuplicateValidation");
 const { validateMembership } = require("../controllers/profileValidator");
 const { upload } = require("../controllers/multer");
 const { checkDirCloudinary } = require("../controllers/checkDir");
-const fileManager = require("../controllers/CRUD");
 const cloudinaryFileManager = require("../controllers/cloudinary");
 
 const mainRouter = Router();
