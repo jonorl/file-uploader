@@ -241,6 +241,15 @@ async function addToShareTable(id, user, assetFolder, parentFolder, expiresAt) {
   });
 }
 
+async function getSharedLink(uuid) {
+  const link = await prisma.share.findUnique({
+    where: {
+      id: uuid,
+    },
+  });
+  return link;
+}
+
 module.exports = {
   serialise,
   deserialise,
@@ -260,4 +269,5 @@ module.exports = {
   getFilesBasedOnIDAndFolder,
   changeFolderName,
   addToShareTable,
+  getSharedLink,
 };

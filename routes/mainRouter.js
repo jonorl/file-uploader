@@ -8,7 +8,7 @@ const { validateMembership } = require("../controllers/profileValidator");
 const { upload } = require("../controllers/multer");
 const { checkDirCloudinary } = require("../controllers/checkDir");
 const cloudinaryFileManager = require("../controllers/cloudinary");
-const { createShareLink } = require("../controllers/share");
+const { createShareLink, validateUUID } = require("../controllers/share");
 
 const mainRouter = Router();
 
@@ -64,6 +64,8 @@ mainRouter.get(
 mainRouter.get("/dir-update/:dirName(*)", mainController.getDirUpdate);
 
 mainRouter.get("/share/:folderName(*)", mainController.getShare);
+
+mainRouter.get("/shared-link/:uuid", validateUUID);
 
 mainRouter.post(
   "/sign-up",

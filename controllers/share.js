@@ -24,7 +24,7 @@ async function createShareLink(req, res, next) {
   const uuid = randomUUID();
   const shareTimeOption = req.body.shreTimeSelect;
   const expiresAt = calculateExpiryDate(shareTimeOption);
-  let subfolderPath = req.params.subfolder
+  let subfolderPath = req.params.subfolder;
 
   let fullPath = subfolderPath;
   if (fullPath.endsWith("/")) {
@@ -43,8 +43,22 @@ async function createShareLink(req, res, next) {
     expiresAt
   );
 
-  req.shareLink = uuid
+  req.shareLink = uuid;
   next();
 }
 
-module.exports = { createShareLink };
+async function validateUUID(req, res) {
+  const uuid = req.params.uuid;
+  const now = new Date();
+  const link = await db.getSharedLink(uuid);
+  const expiryDate = new Date(link.expires_at);
+  const parentFolder = link.parent_folder.slice((link.user_id.toString().length) + 1)
+  console.log("parentFolder", parentFolder)
+  console.log("rawParent",link.parent_folder )
+  console.log("link.user_id.toString().length",link.user_id.toString().length)
+  if (now < expiryDate) {
+    res.redirect(`/upload/${parentFolder}/${link.asset_folder}`);
+  } else res.send("Link has expired");
+}
+
+module.exports = { createShareLink, validateUUID };
