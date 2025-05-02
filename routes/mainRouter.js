@@ -8,6 +8,7 @@ const { validateMembership } = require("../controllers/profileValidator");
 const { upload } = require("../controllers/multer");
 const { checkDirCloudinary } = require("../controllers/checkDir");
 const cloudinaryFileManager = require("../controllers/cloudinary");
+const { createShareLink } = require("../controllers/share");
 
 const mainRouter = Router();
 
@@ -25,10 +26,7 @@ mainRouter.get("/profile", mainController.getProfile);
 
 mainRouter.get("/delete/:messageId(*)", mainController.getDelete);
 
-mainRouter.get(
-  "/dir-new-name/:dir(*)",
-  mainController.getDirEdit
-);
+mainRouter.get("/dir-new-name/:dir(*)", mainController.getDirEdit);
 
 mainRouter.get("/file-new-name/:file(*)", mainController.getFileEdit);
 
@@ -63,10 +61,9 @@ mainRouter.get(
   mainController.getFileDetails
 );
 
-mainRouter.get(
-  "/dir-update/:dirName(*)",
-  mainController.getDirUpdate
-);
+mainRouter.get("/dir-update/:dirName(*)", mainController.getDirUpdate);
+
+mainRouter.get("/share/:folderName(*)", mainController.getShare);
 
 mainRouter.post(
   "/sign-up",
@@ -95,7 +92,11 @@ mainRouter.post(
   mainController.postUpload
 );
 
-mainRouter.post("/newDir/:subfolder(*)", cloudinaryFileManager.folderCreate, mainController.postNewDir);
+mainRouter.post(
+  "/newDir/:subfolder(*)",
+  cloudinaryFileManager.folderCreate,
+  mainController.postNewDir
+);
 
 mainRouter.post(
   "/dir-new-name/:oldName(*)/",
@@ -108,6 +109,8 @@ mainRouter.post(
   cloudinaryFileManager.fileRename,
   mainController.postDirEdit
 );
+
+mainRouter.post("/share/:subfolder(*)", createShareLink, mainController.postShare);
 
 // Always export back to app.js at the end
 

@@ -96,7 +96,14 @@ async function getDirUpdate(req, res) {
   res.render("../views/dir-new-name", {
     oldName: req.params.dirName,
     user: req.user,
-  })
+  });
+}
+
+async function getShare(req, res) {
+  res.render("../views/share", {
+    subfolder: req.params.folderName,
+    user: req.user,
+  });
 }
 
 async function postSignUp(req, res, next) {
@@ -200,23 +207,27 @@ async function postUpload(req, res) {
     req.cloudinaryResponse
   );
   console.log("file added to db successfully");
-  const referer = req.headers.referer || '/';
+  const referer = req.headers.referer || "/";
   res.redirect(referer);
 }
 
 async function postNewDir(req, res) {
-  const referer = req.headers.referer || '/';
+  const referer = req.headers.referer || "/";
   res.redirect(referer);
 }
 
 async function postDirEdit(req, res) {
-  const referer = req.headers.referer || '/';
+  const referer = req.headers.referer || "/";
   res.redirect(referer);
 }
 
 async function postNewName(req, res) {
-  const referer = req.headers.referer || '/';
   res.redirect("/upload");
+}
+
+async function postShare(req, res) {
+  const referer = req.headers.referer || "/";
+  res.send(req.shareLink);
 }
 
 module.exports = {
@@ -233,6 +244,7 @@ module.exports = {
   getDel,
   getFileDetails,
   getDirUpdate,
+  getShare,
   postSignUp,
   postLogin,
   postNewMessage,
@@ -241,4 +253,5 @@ module.exports = {
   postNewDir,
   postDirEdit,
   postNewName,
+  postShare,
 };

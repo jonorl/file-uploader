@@ -211,7 +211,7 @@ async function getFilesBasedOnIDAndFolder(id, finalSubfolder, parentSubfolder) {
       parent_folder: parentSubfolder,
     },
   });
-  const publicIds = filesArray.map(file => file.public_id);
+  const publicIds = filesArray.map((file) => file.public_id);
   return publicIds;
 }
 
@@ -220,13 +220,25 @@ async function changeFolderName(id, folderName, parentFolder, newFolderName) {
     where: {
       user_id: id.user_id,
       asset_folder: folderName,
-      parent_folder: parentFolder
+      parent_folder: parentFolder,
     },
     data: {
       asset_folder: newFolderName,
     },
   });
   return result;
+}
+
+async function addToShareTable(id, user, assetFolder, parentFolder, expiresAt) {
+  await prisma.share.create({
+    data: {
+      id: id,
+      user_id: user,
+      asset_folder: assetFolder,
+      parent_folder: parentFolder,
+      expires_at: expiresAt,
+    },
+  });
 }
 
 module.exports = {
@@ -247,4 +259,5 @@ module.exports = {
   delFile,
   getFilesBasedOnIDAndFolder,
   changeFolderName,
+  addToShareTable,
 };

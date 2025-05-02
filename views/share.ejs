@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/styles.css" />
+    <title>Share</title>
+  </head>
+  <header>
+    <a href="/">Home</a>
+
+    <% if (user) { %>
+    <a href="/upload">Upload</a>
+
+    <a href="/new-message">Leave a message</a>
+
+    <a href="/profile">Profile</a>
+
+    <a href="/logout">Logout</a>
+
+    <% } else { %>
+
+    <a href="/login">Login</a>
+
+    <a href="/sign-up">Sign Up</a>
+
+    <% } %>
+  </header>
+  <body>
+    <% if (user) { %> <% if (user.role === "user") { %>
+    <form action="/share/<%=  subfolder %>" method="POST">
+        <label for="shareTime">Choose share length:</label>
+
+        <select name="shreTimeSelect" id="shreTimeSelect">
+          <option value="1d">1-day</option>
+          <option value="7d">7-days</option>
+          <option value="30d">30-days</option>
+        </select> 
+      <button type="submit">Create share link</button>
+    </form>
+    <% }} %>
+  </body>
+</html>
