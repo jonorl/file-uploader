@@ -8,26 +8,18 @@
   </head>
   <header>
     <a href="/">Home</a>
-
     <% if (user) { %>
     <a href="/upload">Upload</a>
-
     <a href="/new-message">Leave a message</a>
-
     <a href="/profile">Profile</a>
-
     <a href="/logout">Logout</a>
-
     <% } else { %>
-
     <a href="/login">Login</a>
-
     <a href="/sign-up">Sign Up</a>
-
     <% } %>
   </header>
   <body>
-    <% if (user) { %> <% if (user.role === "user") { %>
+    <% if (user) { %>
     <div class="fileStats">
       <h2>File stats</h2>
       <p>File name: <%= fileDetails.originalName %></p>
@@ -41,6 +33,6 @@
       </p>
       <p>Date created: <%= fileDetails.created_at %></p>
     </div>
-    <% }} %>
+    <% } %>
   </body>
 </html>
