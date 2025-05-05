@@ -101,12 +101,22 @@ const cloudinaryFileManager = {
           parentPath
         );
       }
-      
+
       for (const id of await publicIDsArray) {
-        try {
-          const resource = await cloudinary.api.resource(id.public_id || id);
-          resources.push(resource);
-        } catch (err) {}
+        const publicId = id.public_id || id;
+        
+        // Try each resource type independently
+        const resourceTypes = ['image', 'video', 'raw'];
+        
+        for (const type of resourceTypes) {
+          try {
+            const resource = await cloudinary.api.resource(publicId, { 
+              resource_type: type 
+            });
+            resources.push(resource);
+          } catch (err) {
+          }
+        }
       }
 
       rootFolders = await cloudinary.api.sub_folders(
