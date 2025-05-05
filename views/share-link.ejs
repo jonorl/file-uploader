@@ -40,18 +40,6 @@
 
     <% } %>
 
-    <h1>Directories (Cloudinary)</h1>
-
-    <% cloudinaryRootFolderRead.folders.forEach(folder => { %>
-    <div class="dir-container">
-      <a
-        class="navigate"
-        href="/upload/<%= folder.path.slice(user.toString().length + 1) %>"
-        ><%= folder.name %></a
-      >
-    </div>
-    <% }); %>
-
     <!-- Cloudinary Files -->
     <h1>Files (cloudinary)</h1>
 
