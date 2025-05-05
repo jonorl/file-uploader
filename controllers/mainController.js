@@ -8,6 +8,9 @@ const { validationResult } = require("express-validator");
 // Optional, load express to format dates
 const moment = require("moment");
 
+// Functions, GET listed first, then POST.
+
+
 async function getIndex(req, res) {
   const board = await db.getAllUsernames();
   const modifiedBoard = board.map((obj) => ({
@@ -107,7 +110,6 @@ async function getShare(req, res) {
 }
 
 async function getShareLink(req, res) {
-  console.log("req.user", req.user)
   res.render("../views/share-link", {
     user: req.user,
     uuid: req.shareLink,
@@ -216,7 +218,6 @@ async function postUpload(req, res) {
     req.isSubFolder,
     req.cloudinaryResponse
   );
-  console.log("file added to db successfully");
   const referer = req.headers.referer || "/";
   res.redirect(referer);
 }
@@ -236,7 +237,6 @@ async function postNewName(req, res) {
 }
 
 async function postShare(req, res) {
-  console.log("req.shareLink", req.shareLink)
   res.render(`../views/share-link`, {
     uuid: req.shareLink,
     user: req.user,

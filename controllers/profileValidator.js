@@ -1,5 +1,7 @@
 const { body } = require("express-validator");
 
+// Profile validator for creating new users.
+
 const validateMembership = [
   body("membership")
     .exists()

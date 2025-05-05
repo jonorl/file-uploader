@@ -1,5 +1,7 @@
 const { v2: cloudinary } = require("cloudinary");
 
+// This function adds a folder based on the user ID to make it act as a "root".
+
 async function checkDirCloudinary(req, res, next) {
   try {
     const user = req.user.user_id;

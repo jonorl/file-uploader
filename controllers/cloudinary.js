@@ -59,6 +59,9 @@ const cloudinaryFileManager = {
   },
 
   read: async (req, res, next) => {
+
+    // IF there's a subfolder name, set it to subfolderPath var
+
     let isSubFolder = false;
     try {
       let subfolderPath = "/";
@@ -80,7 +83,7 @@ const cloudinaryFileManager = {
       subfolderPath = parentPath + "/" + finalSubfolder;
 
       let publicIDsArray
-      // If there's more than one subfolder
+      // CASE IF there's more than one subfolder
       if (isSubFolder && fullPath.split("/").length === 1) {
         publicIDsArray = db.getFilesBasedOnIDAndFolder(
           req.user.user_id,
@@ -88,12 +91,16 @@ const cloudinaryFileManager = {
           req.user.user_id + parentPath
         );
       } 
+      // CASE IF there's only one subfolder
+
       else if (isSubFolder && fullPath.split("/").length > 1) {
         publicIDsArray = db.getFilesBasedOnIDAndFolder(
           req.user.user_id,
           finalSubfolder,
           req.user.user_id + "/" + parentPath
         );
+
+      // CASE IF on root
       } else {
         publicIDsArray = db.getFilesBasedOnIDAndFolder(
           req.user.user_id,
@@ -105,7 +112,8 @@ const cloudinaryFileManager = {
       for (const id of await publicIDsArray) {
         const publicId = id.public_id || id;
         
-        // Try each resource type independently
+        // by default the cloudinary API calls only images, so this makes it loop through
+        // the 3 types of file types
         const resourceTypes = ['image', 'video', 'raw'];
         
         for (const type of resourceTypes) {
@@ -118,6 +126,8 @@ const cloudinaryFileManager = {
           }
         }
       }
+
+      // Show all the subfolders
 
       rootFolders = await cloudinary.api.sub_folders(
         "/" + req.user.user_id + "/" + subfolderPath
@@ -133,6 +143,8 @@ const cloudinaryFileManager = {
         }
       }
 
+      // Pass the variables for the folders and files to be displayed on the ejs
+
       req.cloudinaryRootFolderRead = rootFolders;
       req.cloudinaryListFiles = resources;
       next();
@@ -144,7 +156,6 @@ const cloudinaryFileManager = {
   fileDetails: async (req, res, next) => {
     const publicID = req.params.file;
     cloudinary.api.resource(publicID, async function (error, result) {
-      console.log("result:", result);
       req.fileDetails = result;
       if (Math.round(req.fileDetails) > 1048576) {
         req.fileSizeUnit = "MB";
@@ -166,7 +177,6 @@ const cloudinaryFileManager = {
     const publicID = req.params.oldName;
     const newName = req.body.newName;
     db.updateName(publicID, newName);
-    console.log("file name updated sucessfully");
     next();
   },
   fileDelete: async (req, res, next) => {
@@ -223,8 +233,6 @@ const cloudinaryFileManager = {
       const parentPath = pathParts.slice(0, -1).join("/");
 
       const cloudinaryNewName = parentPath + "/" + newFolderName;
-
-      // Here be the DB folderName change
 
       db.changeFolderName(req.user, finalSubfolder, parentPath, newFolderName);
 

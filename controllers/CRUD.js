@@ -1,3 +1,6 @@
+// Legacy code for when saving on local PC. This is now the main branch as opposed to the
+// Cloudinary branch.
+
 const fs = require("fs");
 const fsPromise = require("fs").promises;
 const { get } = require("http");

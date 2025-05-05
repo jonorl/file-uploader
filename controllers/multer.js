@@ -1,5 +1,7 @@
 const multer = require("multer");
 
+// Multer middleware to upload files
+
 const storage = multer.diskStorage({
   
   filename: function (req, file, cb) {

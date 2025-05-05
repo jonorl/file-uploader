@@ -2,6 +2,7 @@ const db = require("../db/queries");
 const { randomUUID } = require("crypto");
 const { v2: cloudinary } = require("cloudinary");
 
+// Share function for extra credit: TEMP codes to share folder contents.
 
 // Helper function
 
@@ -21,6 +22,9 @@ function calculateExpiryDate(option) {
   }
   return expiresAt;
 }
+
+// This functions adds the new uuid and data into the share table in the db and provides
+// a randome UUID.
 
 async function createShareLink(req, res, next) {
   const uuid = randomUUID();
@@ -49,6 +53,8 @@ async function createShareLink(req, res, next) {
   next();
 }
 
+// This functions validates that the link hasn't expired yet.
+
 async function validateUUID(req, res, next) {
   const uuid = req.params.uuid;
   const now = new Date();
@@ -58,19 +64,19 @@ async function validateUUID(req, res, next) {
     link.user_id.toString().length + 1
   );
   if (now < expiryDate) {
-    // res.redirect(`/upload/${parentFolder}/${link.asset_folder}`);
     req.shareLink = uuid
     next();
   } else res.send("Link has expired");
   
 }
 
+// This functions acts as "cloudinaryFileManager.read" but for non-users
+
 async function getShareLinkData(req, res, next) {
   let resources = [];
 
   try {
     const uuid = req.shareLink;
-    console.log("uuid", uuid)
     const link = await db.getSharedLink(uuid);
 
     if (!link) {
@@ -110,7 +116,6 @@ async function getShareLinkData(req, res, next) {
       const rootFolders = await cloudinary.api.sub_folders(
         "/" + subfolderPath
       );
-      console.log("rootFolders: ",rootFolders )
       req.cloudinaryRootFolderRead = rootFolders;
     } catch (cloudinarySubfolderError) {
       console.error('Error fetching subfolders from Cloudinary:', cloudinarySubfolderError);
