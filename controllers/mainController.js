@@ -110,6 +110,7 @@ async function getShare(req, res) {
 }
 
 async function getShareLink(req, res) {
+  console.log(req.user)
   res.render("../views/share-link", {
     user: req.user,
     uuid: req.shareLink,

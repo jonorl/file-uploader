@@ -122,7 +122,7 @@ async function getShareLinkData(req, res, next) {
       req.cloudinaryRootFolderRead = { folders: [] }; 
     }
     req.shareLink = uuid
-    req.user = link.user_id
+    // req.user = link.user_id
     next();
 
   } catch (error) {

@@ -59,7 +59,6 @@ const cloudinaryFileManager = {
   },
 
   read: async (req, res, next) => {
-
     // IF there's a subfolder name, set it to subfolderPath var
 
     let isSubFolder = false;
@@ -74,7 +73,7 @@ const cloudinaryFileManager = {
       // get folder and subfolder names
 
       let fullPath = subfolderPath;
-      if (fullPath.endsWith('/')) {
+      if (fullPath.endsWith("/")) {
         fullPath = fullPath.slice(0, -1);
       }
       const pathParts = fullPath.replace(/^\/|\/$/g, "").split("/");
@@ -82,7 +81,7 @@ const cloudinaryFileManager = {
       const parentPath = pathParts.slice(0, -1).join("/");
       subfolderPath = parentPath + "/" + finalSubfolder;
 
-      let publicIDsArray
+      let publicIDsArray;
       // CASE IF there's more than one subfolder
       if (isSubFolder && fullPath.split("/").length === 1) {
         publicIDsArray = db.getFilesBasedOnIDAndFolder(
@@ -90,9 +89,8 @@ const cloudinaryFileManager = {
           finalSubfolder,
           req.user.user_id + parentPath
         );
-      } 
+      }
       // CASE IF there's only one subfolder
-
       else if (isSubFolder && fullPath.split("/").length > 1) {
         publicIDsArray = db.getFilesBasedOnIDAndFolder(
           req.user.user_id,
@@ -100,7 +98,7 @@ const cloudinaryFileManager = {
           req.user.user_id + "/" + parentPath
         );
 
-      // CASE IF on root
+        // CASE IF on root
       } else {
         publicIDsArray = db.getFilesBasedOnIDAndFolder(
           req.user.user_id,
@@ -111,19 +109,18 @@ const cloudinaryFileManager = {
 
       for (const id of await publicIDsArray) {
         const publicId = id.public_id || id;
-        
+
         // by default the cloudinary API calls only images, so this makes it loop through
         // the 3 types of file types
-        const resourceTypes = ['image', 'video', 'raw'];
-        
+        const resourceTypes = ["image", "video", "raw"];
+
         for (const type of resourceTypes) {
           try {
-            const resource = await cloudinary.api.resource(publicId, { 
-              resource_type: type 
+            const resource = await cloudinary.api.resource(publicId, {
+              resource_type: type,
             });
             resources.push(resource);
-          } catch (err) {
-          }
+          } catch (err) {}
         }
       }
 
@@ -155,23 +152,41 @@ const cloudinaryFileManager = {
 
   fileDetails: async (req, res, next) => {
     const publicID = req.params.file;
-    cloudinary.api.resource(publicID, async function (error, result) {
-      req.fileDetails = result;
-      if (Math.round(req.fileDetails) > 1048576) {
-        req.fileSizeUnit = "MB";
-      } else req.fileSizeUnit = "Kb";
 
-      const dbFile = await db.getFileName(
-        req.fileDetails.public_id,
-        req.user.user_id
-      );
-      if (dbFile)
-        req.fileDetails = {
-          ...req.fileDetails,
-          originalName: dbFile.original_name,
-        };
-      next();
-    });
+    try {
+      req.fileDetails = await cloudinary.api.resource(publicID, {
+        resource_type: "raw",
+      });
+    } catch {
+      try {
+        req.fileDetails = await cloudinary.api.resource(publicID, {
+          resource_type: "image",
+        });
+      } catch {
+        try {
+          req.fileDetails = await cloudinary.api.resource(publicID, {
+            resource_type: "video",
+          });
+        } catch {
+          return next(new Error("File not found"));
+        }
+      }
+    }
+
+    // Simple size calculation
+    req.fileDetails.size =
+      req.fileDetails.bytes > 1048576
+        ? (req.fileDetails.bytes / 1048576).toFixed(2) + "MB"
+        : (req.fileDetails.bytes / 1024).toFixed(2) + "KB";
+
+    // Add original name if available
+    const dbFile = await db.getFileName(
+      req.fileDetails.public_id,
+      req.user.user_id
+    );
+    if (dbFile) req.fileDetails.originalName = dbFile.original_name;
+
+    next();
   },
   fileRename: async (req, res, next) => {
     const publicID = req.params.oldName;
