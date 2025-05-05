@@ -36,13 +36,17 @@
 
     <h1>Please copy URL above to share this link externally</h1>
 
+    <% if (uuid) { %><a class="shareLink" href="/share-link/<%= uuid %>"> <%= uuid %></a>
+
+    <% } %>
+
     <h1>Directories (Cloudinary)</h1>
 
     <% cloudinaryRootFolderRead.folders.forEach(folder => { %>
     <div class="dir-container">
       <a
         class="navigate"
-        href="/upload/<%= folder.path.slice(user.user_id.toString().length + 1) %>"
+        href="/upload/<%= folder.path.slice(user.toString().length + 1) %>"
         ><%= folder.name %></a
       >
     </div>
@@ -54,9 +58,6 @@
     <% cloudinaryListFiles.forEach(file => { %>
     <div class="file-container">
       <a class="download" href="<%= file.url %>"><%= file.original_name %></a>
-      <a class="details" href="/file-details/<%= file.public_id %>">
-        <i id="<%= file.asset_id %>" class="fas fa-eye"></i>
-      </a>
     </div>
     <% }); %>
   </body>

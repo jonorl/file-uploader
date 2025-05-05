@@ -27,17 +27,18 @@
     <% } %>
   </header>
   <body>
-    <% if (user) { %> <% if (user.role === "user") { %>
-    <form action="/share/<%=  subfolder %>" method="POST">
-        <label for="shareTime">Choose share length:</label>
+    <% if (user) { %> 
 
-        <select name="shreTimeSelect" id="shreTimeSelect">
-          <option value="1d">1-day</option>
-          <option value="7d">7-days</option>
-          <option value="30d">30-days</option>
-        </select> 
+    <form action="/share-link/<%=  subfolder %>" method="POST">
+      <label for="shareTime">Choose share length:</label>
+
+      <select name="shreTimeSelect" id="shreTimeSelect">
+        <option value="1d">1-day</option>
+        <option value="7d">7-days</option>
+        <option value="30d">30-days</option>
+      </select>
       <button type="submit">Create share link</button>
     </form>
-    <% }} %>
+    <% } %>
   </body>
 </html>

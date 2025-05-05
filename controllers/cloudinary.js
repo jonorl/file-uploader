@@ -101,9 +101,7 @@ const cloudinaryFileManager = {
           parentPath
         );
       }
-
-
-
+      
       for (const id of await publicIDsArray) {
         try {
           const resource = await cloudinary.api.resource(id.public_id || id);

@@ -106,6 +106,16 @@ async function getShare(req, res) {
   });
 }
 
+async function getShareLink(req, res) {
+  console.log("req.user", req.user)
+  res.render("../views/share-link", {
+    user: req.user,
+    uuid: req.shareLink,
+    cloudinaryRootFolderRead: req.cloudinaryRootFolderRead,
+    cloudinaryListFiles: req.cloudinaryListFiles,
+  });
+}
+
 async function postSignUp(req, res, next) {
   // Handle validation errors
   const errors = validationResult(req);
@@ -226,8 +236,13 @@ async function postNewName(req, res) {
 }
 
 async function postShare(req, res) {
-  const referer = req.headers.referer || "/";
-  res.send(req.shareLink);
+  console.log("req.shareLink", req.shareLink)
+  res.render(`../views/share-link`, {
+    uuid: req.shareLink,
+    user: req.user,
+    cloudinaryRootFolderRead: req.cloudinaryRootFolderRead,
+    cloudinaryListFiles: req.cloudinaryListFiles,
+  });
 }
 
 module.exports = {
@@ -245,6 +260,7 @@ module.exports = {
   getFileDetails,
   getDirUpdate,
   getShare,
+  getShareLink,
   postSignUp,
   postLogin,
   postNewMessage,
