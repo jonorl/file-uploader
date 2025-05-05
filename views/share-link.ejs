@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="/styles.css" />
+    <title>Shared Link</title>
+  </head>
+  <body>
+    <header>
+      <a href="/">Home</a>
+
+      <% if (user) { %>
+      <a href="/upload">Upload</a>
+
+      <a href="/new-message">Leave a message</a>
+
+      <a href="/profile">Profile</a>
+
+      <a href="/logout">Logout</a>
+
+      <% } else { %>
+
+      <a href="/login">Login</a>
+
+      <a href="/sign-up">Sign Up</a>
+
+      <% } %>
+    </header>
+
+    <!-- Cloudinary Directories -->
+
+    <h1>Please copy URL above to share this link externally</h1>
+
+    <h1>Directories (Cloudinary)</h1>
+
+    <% cloudinaryRootFolderRead.folders.forEach(folder => { %>
+    <div class="dir-container">
+      <a
+        class="navigate"
+        href="/upload/<%= folder.path.slice(user.user_id.toString().length + 1) %>"
+        ><%= folder.name %></a
+      >
+    </div>
+    <% }); %>
+
+    <!-- Cloudinary Files -->
+    <h1>Files (cloudinary)</h1>
+
+    <% cloudinaryListFiles.forEach(file => { %>
+    <div class="file-container">
+      <a class="download" href="<%= file.url %>"><%= file.original_name %></a>
+      <a class="details" href="/file-details/<%= file.public_id %>">
+        <i id="<%= file.asset_id %>" class="fas fa-eye"></i>
+      </a>
+    </div>
+    <% }); %>
+  </body>
+</html>
